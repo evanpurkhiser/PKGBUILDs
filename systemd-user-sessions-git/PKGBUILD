@@ -3,7 +3,7 @@
 _gitname=systemd-user-sessions
 
 pkgname=systemd-user-sessions-git
-pkgver=12.f38cb8e
+pkgver=0.0.0
 pkgrel=1
 pkgdesc="Units required for a basic systemd --user session"
 arch=(any)
