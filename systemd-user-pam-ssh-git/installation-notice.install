@@ -1,0 +1,8 @@
+post_install() {
+	echo ""
+	echo "To start using this script add the following lines to your"
+	echo "/etc/pam.d/system-login file"
+	echo ""
+	echo " auth  optional  pam_exec.so  expose_authtok /usr/lib/systemd/systemd-user-pam-ssh"
+	echo ""
+}

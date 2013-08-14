@@ -11,6 +11,7 @@ license=('MIT')
 url="https://github.com/EvanPurkhiser/${_gitname}"
 depends=(systemd openssh)
 makedepends=(git)
+install="installation-notice.install"
 source=("git://github.com/EvanPurkhiser/${_gitname}")
 md5sums=('SKIP')
 
