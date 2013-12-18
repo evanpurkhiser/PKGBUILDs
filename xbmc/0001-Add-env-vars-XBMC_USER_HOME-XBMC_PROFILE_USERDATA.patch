@@ -1,0 +1,45 @@
+From cc454fda95838518395436673aab4caed5c1a85a Mon Sep 17 00:00:00 2001
+From: Evan Purkhiser <evanpurkhiser@gmail.com>
+Date: Wed, 18 Dec 2013 11:30:53 -0500
+Subject: [PATCH] Add env vars XBMC_USER_HOME, XBMC_PROFILE_USERDATA
+
+Allow users to specify the XBMC user home directory and user
+masterprofile directory using environment variables. This brings the
+directory configuration in line with the ability to set the user temp
+directory via a environment variable.
+---
+ xbmc/Application.cpp | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
+index 08bfba0..815ea89 100644
+--- a/xbmc/Application.cpp
++++ b/xbmc/Application.cpp
+@@ -1060,11 +1060,20 @@ bool CApplication::InitDirectoriesLinux()
+     // map our special drives
+     CSpecialProtocol::SetXBMCBinPath(xbmcBinPath);
+     CSpecialProtocol::SetXBMCPath(xbmcPath);
+-    CSpecialProtocol::SetHomePath(userHome + "/.xbmc");
+-    CSpecialProtocol::SetMasterProfilePath(userHome + "/.xbmc/userdata");
+ 
+-    CStdString strTempPath = userHome;
+-    strTempPath = URIUtils::AddFileToFolder(strTempPath, ".xbmc/temp");
++    CStdString strHomePath, strProfilePath, strTempPath;
++
++    strHomePath = URIUtils::AddFileToFolder(userHome, ".xbmc");
++    if (getenv("XBMC_USER_HOME"))
++        strHomePath = getenv("XBMC_USER_HOME");
++    CSpecialProtocol::SetHomePath(strHomePath);
++
++    strProfilePath = URIUtils::AddFileToFolder(strHomePath, "userdata");
++    if (getenv("XBMC_PROFILE_USERDATA"))
++        strProfilePath = getenv("XBMC_PROFILE_USERDATA");
++    CSpecialProtocol::SetMasterProfilePath(strProfilePath);
++
++    strTempPath = URIUtils::AddFileToFolder(strHomePath, "temp");
+     if (getenv("XBMC_TEMP"))
+       strTempPath = getenv("XBMC_TEMP");
+     CSpecialProtocol::SetTempPath(strTempPath);
+-- 
+1.8.5.2
+
