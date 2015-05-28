@@ -1,0 +1,18 @@
+# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+
+pkgname=bt-power-listener
+pkgver=0.1
+pkgrel=1
+pkgdesc="Handle media-center power automation"
+arch=('i686' 'x86_64')
+license=('MIT')
+depends=(python2 python2-dbus python2-gobject2)
+source=(bt-power-listener.service bt-power-listener)
+md5sums=('2e7033a7888d5e74c0de72182683cca2'
+         'c95380807ffb4da4ef558e83ebb4967f')
+
+package() {
+  install -D -m0755 "$srcdir/bt-power-listener" "$pkgdir/usr/bin/bt-power-listener"
+  install -D -m0644 "$srcdir/bt-power-listener.service" "$pkgdir/usr/lib/systemd/system/bt-power-listener.service"
+}
+
