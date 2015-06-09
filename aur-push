@@ -9,17 +9,16 @@ then
     exit -1
 fi
 
-pkg_path=$(realpath "$1")
 git_root=$(realpath "$(git rev-parse --git-dir)/..")/
-
-pkg=$(basename "$pkg_path")
+pkg_path=$(realpath "$1")
+pkg_name=$(basename "$pkg_path")
 
 prefix=${pkg_path#$git_root}
-branch=aur4/$pkg
+branch=aur4/$pkg_name
 
 if [[ ! -d "$pkg_path" || ! -e "${pkg_path}/PKGBUILD" ]]
 then
-    echo "$pkg does not contain a PKGBUILD" >&2
+    echo "$pkg_name does not contain a PKGBUILD" >&2
     exit -1
 fi
 
@@ -27,7 +26,7 @@ fi
 git subtree split --prefix="$prefix" -b $branch
 
 # Generate .SRCINFO for each commit
-git filter-branch -f --tree-filter "mksrcinfo" -- aur4/$pkg
+git filter-branch -f --tree-filter "mksrcinfo" -- $branch
 
-git push ssh+git://aur@aur4.archlinux.org/${pkg}.git/ $branch:master
+git push ssh+git://aur@aur4.archlinux.org/${pkg_name}.git/ $branch:master
 git branch -D $branch
