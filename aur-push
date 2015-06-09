@@ -1,0 +1,33 @@
+#!/bin/sh
+# Push a nested directory package to AUR4
+
+set -e
+
+if [ $# -lt 1 ]
+then
+    echo "usage: $(basename $0) <path/to/project>" >&2
+    exit -1
+fi
+
+pkg_path=$(realpath "$1")
+git_root=$(realpath "$(git rev-parse --git-dir)/..")/
+
+pkg=$(basename "$pkg_path")
+
+prefix=${pkg_path#$git_root}
+branch=aur4/$pkg
+
+if [[ ! -d "$pkg_path" || ! -e "${pkg_path}/PKGBUILD" ]]
+then
+    echo "$pkg does not contain a PKGBUILD" >&2
+    exit -1
+fi
+
+# Split the package into a branch
+git subtree split --prefix="$prefix" -b $branch
+
+# Generate .SRCINFO for each commit
+git filter-branch -f --tree-filter "mksrcinfo" -- aur4/$pkg
+
+git push ssh+git://aur@aur4.archlinux.org/${pkg}.git/ $branch:master
+git branch -D $branch
