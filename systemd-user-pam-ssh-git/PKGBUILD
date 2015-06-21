@@ -1,28 +1,27 @@
 # Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
 
-_gitname=systemd-user-pam-ssh
-
 pkgname=systemd-user-pam-ssh-git
-pkgver=0.0.0
-pkgrel=1
 pkgdesc="Script used to decrypt a SSH key into a systemd --user managed ssh agnet"
-arch=(any)
 license=('MIT')
-url="https://github.com/EvanPurkhiser/${_gitname}"
-depends=(systemd openssh)
-makedepends=(git)
-install="installation-notice.install"
-source=("git://github.com/EvanPurkhiser/${_gitname}")
+url="https://github.com/EvanPurkhiser/systemd-user-pam-ssh"
+pkgver=9.55bfc35
+pkgrel=1
+
+source=("$pkgname::git://github.com/EvanPurkhiser/systemd-user-pam-ssh")
 md5sums=('SKIP')
+install="installation-notice.install"
+depends=('systemd' 'openssh')
+makedepends=('git')
+arch=('any')
 
 pkgver() {
-	cd "${srcdir}/${_gitname}"
-	echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+    cd "$srcdir/$pkgname"
+    echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
 }
 
 package() {
-	cd "${srcdir}/${_gitname}"
+    cd "$srcdir/$pkgname"
 
-	install -Dm 755 "systemd-user-pam-ssh" "${pkgdir}/usr/lib/systemd/systemd-user-pam-ssh"
-	install -Dm 644 "LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    install -Dm 755 "systemd-user-pam-ssh" "${pkgdir}/usr/lib/systemd/systemd-user-pam-ssh"
+    install -Dm 644 "LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
