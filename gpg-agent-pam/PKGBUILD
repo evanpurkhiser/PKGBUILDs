@@ -7,7 +7,7 @@ pkgver=1
 pkgrel=1
 
 source=('gpg-pam-exec')
-md5sums=('edde11293c4be1552c00087306b4e2ee')
+md5sums=('41a4ca4666f4888c905e28f347658554')
 depends=('gnupg')
 arch=('any')
 
