@@ -1,0 +1,18 @@
+# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+
+pkgname=gpg-agent-pam
+pkgdesc="Rudimentary PAM integration for gpg-agent"
+license=('MIT')
+pkgver=1
+pkgrel=1
+
+source=('gpg-pam-exec')
+md5sums=('edde11293c4be1552c00087306b4e2ee')
+depends=('gnupg')
+arch=('any')
+
+package() {
+    cd "$srcdir"
+
+    install -Dm 755 "gpg-pam-exec" "${pkgdir}/usr/bin/gpg-pam-exec"
+}
