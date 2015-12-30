@@ -1,11 +1,12 @@
 # Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
 
 pkgname=media-center-automation
-pkgver=23.05c587b
-pkgrel=1
 pkgdesc="Handle media-center power automation"
 arch=('i686' 'x86_64')
 license=('MIT')
+url="https://github.com/EvanPurkhiser/media-center-automation"
+pkgver=23.05c587b
+pkgrel=1
 
 source=("$pkgname::git://github.com/EvanPurkhiser/media-center-automation")
 md5sums=('SKIP')
