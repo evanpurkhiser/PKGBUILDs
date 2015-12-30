@@ -2,7 +2,6 @@
 
 pkgname=media-center-automation
 pkgdesc="Handle media-center power automation"
-arch=('i686' 'x86_64')
 license=('MIT')
 url="https://github.com/EvanPurkhiser/media-center-automation"
 pkgver=23.05c587b
@@ -11,6 +10,7 @@ pkgrel=1
 source=("$pkgname::git://github.com/EvanPurkhiser/media-center-automation")
 md5sums=('SKIP')
 depends=('systemd' 'kodi' 'lirc' 'python2' 'python2-dbus' 'python2-gobject2' 'dbus-glib')
+arch=('i686' 'x86_64')
 
 pkgver() {
     cd "$srcdir/$pkgname"
