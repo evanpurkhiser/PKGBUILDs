@@ -4,8 +4,8 @@ pkgname=media-center-automation
 pkgdesc="Handle media-center power automation"
 license=('MIT')
 url="https://github.com/EvanPurkhiser/media-center-automation"
-pkgver=23.05c587b
-pkgrel=3
+pkgver=28.55cca85
+pkgrel=1
 
 source=("$pkgname::git://github.com/EvanPurkhiser/media-center-automation")
 md5sums=('SKIP')
@@ -23,6 +23,7 @@ package() {
   # Bluetooth power listener
   install -D -m0755 "bt-power-listener/bt-power-listener"         "$pkgdir/usr/bin/bt-power-listener"
   install -D -m0644 "bt-power-listener/bt-power-listener.service" "$pkgdir/usr/lib/systemd/system/bt-power-listener.service"
+  install -D -m0644 "bt-power-listener/bt_power_listener.conf"    "$pkgdir/etc/dbus-1/system.d/bt_power_listener.conf"
 
   # Lirc remotes
   install -D -m0644 "remotes/SMSL_RC36.conf"      "$pkgdir/etc/lirc/lircd.conf.d/SMSL_RC36.conf"
