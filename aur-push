@@ -28,5 +28,5 @@ git subtree split --prefix="$prefix" -b $branch
 # Generate .SRCINFO for each commit
 git filter-branch -f --tree-filter "mksrcinfo" -- $branch
 
-git push ssh+git://aur@aur4.archlinux.org/${pkg_name}.git/ $branch:master
+git push $@ ssh+git://aur@aur4.archlinux.org/${pkg_name}.git/ $branch:master
 git branch -D $branch
