@@ -5,12 +5,15 @@ set -e
 
 if [ $# -lt 1 ]
 then
-    echo "usage: $(basename $0) <path/to/project>" >&2
+    echo "usage: $(basename $0) <path/to/project> [git-push options]" >&2
     exit -1
 fi
 
+pkg=$1
+shift
+
 git_root=$(realpath "$(git rev-parse --git-dir)/..")/
-pkg_path=$(realpath "$1")
+pkg_path=$(realpath "$pkg")
 pkg_name=$(basename "$pkg_path")
 
 prefix=${pkg_path#$git_root}
