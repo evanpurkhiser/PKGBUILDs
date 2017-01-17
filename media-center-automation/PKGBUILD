@@ -31,7 +31,4 @@ package() {
 
   # NES30 bluetooth rules
   install -D -m0644 "10-nes30-joystick.rules" "$pkgdir/etc/udev/rules.d/10-nes30-joystick.rules"
-
-  # Kodi NES30 keymapping
-  install -D -m0644 "keymaps/joystick.NES30.xml" "$pkgdir/var/lib/kodi/.kodi/userdata/keymaps/joystick.NES30.xml"
 }
