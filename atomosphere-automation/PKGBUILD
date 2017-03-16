@@ -1,0 +1,36 @@
+# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+
+pkgname=atmosphere-automation
+pkgdesc="Service for handling home atmopshere automation"
+license=('MIT')
+url="https://github.com/EvanPurkhiser/atmosphere-automation"
+pkgver=14.29d52e3
+pkgrel=1
+
+source=("$pkgname::git://github.com/EvanPurkhiser/atmosphere-automation")
+md5sums=('SKIP')
+makedepends=('glide' 'go')
+optdepends=('systemd')
+arch=('armv7h')
+
+pkgver() {
+    cd "$srcdir/$pkgname"
+    echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  cd "$srcdir/$pkgname"
+
+  export GOARCH=arm
+  export GOARM=7
+
+  glide install
+  go build -o atmosphere-automation cmd/atmosphere-automation/main.go
+}
+
+package() {
+  cd "$srcdir/$pkgname"
+
+  install -D -m0755 "atmosphere-automation"         "$pkgdir/usr/bin/atmosphere-automation"
+  install -D -m0644 "atmosphere-automation.service" "$pkgdir/usr/lib/systemd/system/atmosphere-automation.service"
+}
