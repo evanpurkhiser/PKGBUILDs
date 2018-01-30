@@ -1,0 +1,26 @@
+# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+
+pkgname=homebridge-sonoff-git
+pkgdesc="Homebridge plugin for SonOff devices"
+license=()
+url="https://github.com/MacWyznawca/homebridge-mqtt-switch-tasmota"
+pkgver=1
+pkgrel=1
+
+source=("$pkgname::git+${url}.git")
+md5sums=('SKIP')
+makedepends=('git' 'npm')
+depends=('homebridge')
+arch=('any')
+
+pkgver() {
+    cd "$srcdir/$pkgname"
+    echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+package() {
+  cd "$srcdir"
+
+  npm pack $pkgname/
+  npm install --cache ../cache --user root -g --prefix "$pkgdir/usr" *.tgz
+}
