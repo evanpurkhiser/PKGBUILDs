@@ -1,11 +1,11 @@
 # Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
 
-pkgname=homebridge-sonoff-git
+pkgname=homebridge-tasmota-git
 pkgdesc="Homebridge plugin for SonOff devices"
 license=()
-url="https://github.com/MacWyznawca/homebridge-mqtt-switch-tasmota"
+url="https://github.com/EvanPurkhiser/homebridge-tasmota"
 pkgver=1
-pkgrel=1
+pkgrel=2
 
 source=("$pkgname::git+${url}.git")
 md5sums=('SKIP')
