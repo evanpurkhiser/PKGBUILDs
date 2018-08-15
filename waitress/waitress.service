@@ -1,0 +1,10 @@
+[Unit]
+Description=Your files, served
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/waitress.conf
+ExecStart=/usr/bin/waitress -root $ROOT -port $PORT
+
+[Install]
+WantedBy=multi-user.target

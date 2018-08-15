@@ -1,0 +1,43 @@
+# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+
+gopath_root="go.evanpurkhiser.com"
+pkgname=waitress
+pkgdesc="Waitress is a small server that quickly serves up your files with style."
+license=('MIT')
+url="https://github.com/EvanPurkhiser/waitress"
+pkgver=35.4db6f3c
+pkgrel=1
+
+source=("$pkgname::git://github.com/EvanPurkhiser/waitress" "waitress.service" "waitress.conf")
+md5sums=('SKIP' '2fbcf107949559a5c8f4ee0d8425a598' 'e1d0d2d8eefe3c4189f46886198c2234')
+makedepends=('go' 'zip' 'dep' 'yarn')
+optdepends=('systemd')
+arch=('any')
+
+# We have to disable stripping or the appended binary data from rice append
+# will be removed.
+options=(!strip)
+
+pkgver() {
+  cd "$srcdir/$pkgname"
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  export GOPATH="$srcdir/gopath"
+  export PATH="$GOPATH/bin:$PATH"
+
+  mkdir -p "$GOPATH/src/$gopath_root"
+  cp -r "$srcdir/$pkgname" "$GOPATH/src/$gopath_root/$pkgname"
+  cd "$GOPATH/src/$gopath_root/$pkgname"
+
+  make
+  mv "$GOPATH/src/$gopath_root/$pkgname/dist" "$srcdir/$pkgname"
+}
+
+package() {
+  install -D -m0755 "$srcdir/$pkgname/dist/waitress" "$pkgdir/usr/bin/waitress"
+  install -D -m0644 "$srcdir/$pkgname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -D -m0644 "$srcdir/waitress.service" "$pkgdir/usr/lib/systemd/system/waitress.service"
+  install -D -m0644 "$srcdir/waitress.conf" "$pkgdir/etc/waitress.conf"
+}
