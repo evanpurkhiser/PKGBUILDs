@@ -1,0 +1,25 @@
+sudo: required
+
+services:
+ - docker
+
+env:
+  - PACKAGE=mutagen-hg
+  - PACKAGE=python-httpie-oauth
+  - PACKAGE=keyfinder-cli-git
+  - PACKAGE=homebridge-git
+  - PACKAGE=puddletag-git
+  - PACKAGE=waitress
+  - PACKAGE=oggfwd
+  - PACKAGE=dots-manager
+  - PACKAGE=setcolors-git
+  - PACKAGE=libkeyfinder-git
+  - PACKAGE=mkinitcpio-colors-git
+  - PACKAGE=media-center-automation
+  - PACKAGE=homebridge-tasmota-git
+  - PACKAGE=oggfwd-bzr
+  - PACKAGE=atomosphere-automation
+  - PACKAGE=gpg-agent-pam
+
+script:
+  - docker run -v $TRAVIS_BUILD_DIR/$PACKAGE:/pkg whynothugo/makepkg
