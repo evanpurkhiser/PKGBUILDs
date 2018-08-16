@@ -9,7 +9,7 @@ env:
   - PACKAGE=keyfinder-cli-git
   - PACKAGE=homebridge-git
   - PACKAGE=puddletag-git
-  - PACKAGE=waitress
+  - PACKAGE=waitress-git
   - PACKAGE=oggfwd
   - PACKAGE=dots-manager
   - PACKAGE=setcolors-git
