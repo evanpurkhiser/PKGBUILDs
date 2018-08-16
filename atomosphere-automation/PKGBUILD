@@ -9,7 +9,7 @@ pkgrel=1
 
 source=("$pkgname::git://github.com/EvanPurkhiser/atmosphere-automation")
 md5sums=('SKIP')
-makedepends=('glide' 'go')
+makedepends=('git' 'go' 'glide')
 optdepends=('systemd')
 arch=('armv7h')
 

@@ -9,6 +9,7 @@ pkgrel=1
 
 source=("$pkgname::git://github.com/EvanPurkhiser/media-center-automation")
 md5sums=('SKIP')
+makedepends=('git')
 depends=('systemd' 'kodi' 'lirc' 'python2' 'python2-dbus' 'python2-gobject2' 'dbus-glib')
 arch=('i686' 'x86_64')
 
