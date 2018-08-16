@@ -19,7 +19,6 @@ env:
   - PACKAGE=homebridge-tasmota-git
   - PACKAGE=oggfwd-bzr
   - PACKAGE=atomosphere-automation
-  - PACKAGE=gpg-agent-pam
 
 script:
   - docker run -v $TRAVIS_BUILD_DIR/$PACKAGE:/pkg whynothugo/makepkg
