@@ -1,11 +1,11 @@
 # Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
 
 gopath_root="go.evanpurkhiser.com"
-pkgname=waitress
+pkgname=waitress-git
 pkgdesc="Waitress is a small server that quickly serves up your files with style."
 license=('MIT')
 url="https://github.com/EvanPurkhiser/waitress"
-pkgver=35.4db6f3c
+pkgver=37.ebbf011
 pkgrel=1
 
 source=("$pkgname::git://github.com/EvanPurkhiser/waitress" "waitress.service" "waitress.conf")
