@@ -28,11 +28,11 @@ build() {
   export PATH="$GOPATH/bin:$PATH"
 
   mkdir -p "$GOPATH/src/$gopath_root"
-  cp -r "$srcdir/$pkgname" "$GOPATH/src/$gopath_root/$pkgname"
-  cd "$GOPATH/src/$gopath_root/$pkgname"
+  cp -r "$srcdir/$pkgname" "$GOPATH/src/$gopath_root/waitress"
+  cd "$GOPATH/src/$gopath_root/waitress"
 
   make
-  mv "$GOPATH/src/$gopath_root/$pkgname/dist" "$srcdir/$pkgname"
+  mv "$GOPATH/src/$gopath_root/waitress/dist" "$srcdir/$pkgname"
 }
 
 package() {
