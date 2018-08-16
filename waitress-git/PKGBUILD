@@ -5,7 +5,7 @@ pkgname=waitress-git
 pkgdesc="Waitress is a small server that quickly serves up your files with style."
 license=('MIT')
 url="https://github.com/EvanPurkhiser/waitress"
-pkgver=37.ebbf011
+pkgver=39.c0711cf
 pkgrel=1
 
 source=("$pkgname::git+$url.git" "waitress.service" "waitress.conf")
@@ -13,6 +13,7 @@ md5sums=('SKIP' '2fbcf107949559a5c8f4ee0d8425a598' 'e1d0d2d8eefe3c4189f46886198c
 makedepends=('git' 'go' 'zip' 'dep' 'yarn')
 optdepends=('systemd')
 arch=('any')
+backup=('etc/waitress.conf')
 
 # We have to disable stripping or the appended binary data from rice append
 # will be removed.
