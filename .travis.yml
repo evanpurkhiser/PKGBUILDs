@@ -20,4 +20,4 @@ env:
   - PACKAGE=oggfwd-bzr
 
 script:
-  - docker run -v $TRAVIS_BUILD_DIR/$PACKAGE:/pkg evanpurkhiser/makepkg
+  - docker run -v $TRAVIS_BUILD_DIR/$PACKAGE:/pkg whynothugo/makepkg
