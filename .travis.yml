@@ -21,3 +21,8 @@ env:
 
 script:
   - docker run -v $TRAVIS_BUILD_DIR/$PACKAGE:/pkg whynothugo/makepkg
+
+matrix:
+  # Allow puddletag to fail right now since pyqt4 was just removed from
+  # community, we'll have to wait until a better AUR package shows up.
+  allow_failures: [ env: PACKAGE=puddletag-git ]
