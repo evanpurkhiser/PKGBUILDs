@@ -1,7 +1,7 @@
 [Unit]
 Description=Node.js HomeKit Server
 Requires=avahi-daemon.service
-After=network.target avahi-daemon.service
+After=network-online.target avahi-daemon.service
 
 [Service]
 User=homebridge
