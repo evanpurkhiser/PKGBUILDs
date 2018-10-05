@@ -3,7 +3,7 @@ Description=Monitor and proxy events on a PROLINK network
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/prolink-server
+ExecStart=/usr/bin/prolink-server --port 5252
 
 [Install]
 WantedBy=multi-user.target

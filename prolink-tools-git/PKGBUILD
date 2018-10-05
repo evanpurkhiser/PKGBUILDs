@@ -8,7 +8,7 @@ pkgver=0
 pkgrel=1
 
 source=("$pkgname::git+$url.git" 'prolink-server.service')
-md5sums=('SKIP' 'c9b2f1488ec3aa35fca37e2a165fb87e')
+md5sums=('SKIP' '452c40813af6b69a5f1198a838d00aba')
 makedepends=('git' 'go')
 optdepends=('systemd')
 arch=('any')
