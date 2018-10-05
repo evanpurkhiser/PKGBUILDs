@@ -1,0 +1,41 @@
+# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+
+pkgname='prolink-tools-git'
+pkgdesc='Prolink tools provides a suite of tools for DJs using pioneer equipment'
+license=('MIT')
+url="https://github.com/EvanPurkhiser/prolink-tools"
+pkgver=0
+pkgrel=1
+
+source=("$pkgname::git+$url.git" 'prolink-server.service')
+md5sums=('SKIP' 'c9b2f1488ec3aa35fca37e2a165fb87e')
+makedepends=('git' 'go')
+optdepends=('systemd')
+arch=('any')
+
+pkgver() {
+  cd "$srcdir/$pkgname"
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  export GOPATH="$srcdir/gopath"
+  export PATH="$GOPATH/bin:$PATH"
+
+  mkdir -p "$GOPATH/bin"
+  curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+
+  base="$GOPATH/src/go.evanpurkhiser.com"
+  mkdir -p "$base"
+  cp -r "$srcdir/$pkgname" "$base/prolink-tools"
+  cd "$base/prolink-tools/server"
+
+  make
+  mv "$base/prolink-tools/server/dist/prolink-server" "$srcdir/$pkgname"
+}
+
+package() {
+  install -D -m0755 "$srcdir/$pkgname/prolink-server" "$pkgdir/usr/bin/prolink-server"
+  install -D -m0644 "$srcdir/$pkgname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -D -m0644 "$srcdir/prolink-server.service" "$pkgdir/usr/lib/systemd/system/prolink-server.service"
+}

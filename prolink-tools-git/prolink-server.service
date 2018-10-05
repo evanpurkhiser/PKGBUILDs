@@ -1,0 +1,9 @@
+[Unit]
+Description=Monitor and proxy events on a PROLINK network
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/prolink-server
+
+[Install]
+WantedBy=multi-user.target
