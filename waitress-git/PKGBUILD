@@ -21,19 +21,15 @@ options=(!strip)
 
 pkgver() {
   cd "$srcdir/$pkgname"
+
   echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
 }
 
 build() {
-  export GOPATH="$srcdir/gopath"
-  export PATH="$GOPATH/bin:$PATH"
-
-  mkdir -p "$GOPATH/src/$gopath_root"
-  cp -r "$srcdir/$pkgname" "$GOPATH/src/$gopath_root/waitress"
-  cd "$GOPATH/src/$gopath_root/waitress"
+  cd "$srcdir/$pkgname"
+  export PATH="$HOME/go/bin:$PATH"
 
   make
-  mv "$GOPATH/src/$gopath_root/waitress/dist" "$srcdir/$pkgname"
 }
 
 package() {
