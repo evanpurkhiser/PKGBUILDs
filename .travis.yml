@@ -8,7 +8,6 @@ env:
   - PACKAGE=python-httpie-oauth
   - PACKAGE=keyfinder-cli-git
   - PACKAGE=homebridge-git
-  - PACKAGE=puddletag-git
   - PACKAGE=waitress-git
   - PACKAGE=oggfwd
   - PACKAGE=dots-manager
