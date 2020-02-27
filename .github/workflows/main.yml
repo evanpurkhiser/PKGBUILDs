@@ -1,0 +1,37 @@
+name: build
+on:
+  push:
+  schedule:
+  - cron: '* 0 * * *'
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package:
+        - mutagen-git
+        - python-httpie-oauth
+        - keyfinder-cli-git
+        - homebridge-git
+        - waitress-git
+        - oggfwd
+        - dots-manager
+        - setcolors-git
+        - libkeyfinder-git
+        - mkinitcpio-colors-git
+        - media-center-automation
+        - homebridge-tasmota-git
+        - oggfwd-bzr
+        - prolink-tools-git
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: docker run -e EXPORT_PKG=1 -v ${{ github.workspace }}/${{ matrix.package }}:/pkg whynothugo/makepkg
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: ${{ matrix.package }}
+        path: ${{ github.workspace }}/${{ matrix.package }}/*.tar.xz
