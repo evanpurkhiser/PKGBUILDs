@@ -29,9 +29,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: docker run -e EXPORT_PKG=1 -v ${{ github.workspace }}/${{ matrix.package }}:/pkg whynothugo/makepkg
+
+    - name: Build package
+      run: docker run -e EXPORT_PKG=1 -v ${{ github.workspace }}/${{ matrix.package }}:/pkg whynothugo/makepkg
+
+    - name: Locate built package
+      id: locate
+      run: |
+        pkg_path="$(ls ${{ github.workspace }}/${{ matrix.package }}/*.tar.xz)"
+        echo ::set-output name=path::$pkg_path
+        echo ::set-output name=name::$(basename $pkg_path)
 
     - uses: actions/upload-artifact@v1
       with:
-        name: ${{ matrix.package }}
-        path: ${{ github.workspace }}/${{ matrix.package }}/*.tar.xz
+        name: ${{ steps.locate.outputs.name }}
+        path: ${{ steps.locate.outputs.path }}
