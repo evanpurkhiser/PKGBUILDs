@@ -10,22 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         package:
-        - mutagen-git
-        - python-httpie-oauth
-        - keyfinder-cli-git
-        - homebridge-git
-        - waitress-git
-        - oggfwd
         - dots-manager
-        - setcolors-git
+        - keyfinder-cli-git
         - libkeyfinder-git
         - mkinitcpio-colors-git
-        - media-center-automation
-        - homebridge-tasmota-git
+        - oggfwd
         - oggfwd-bzr
+        - python-httpie-oauth
+        - setcolors-git
+        - mutagen-git
+        - homebridge-git
+        - homebridge-tasmota-git
+        - media-center-automation
         - prolink-tools-git
+        - waitress-git
+
+    env:
+      # List of packages which will be auto-published to the AUR. Must be a
+      # string as github does not let you pass arrays as environment variables.
+      auto_publish: |
+        dots-manager
+        keyfinder-cli-git
+        libkeyfinder-git
+        mkinitcpio-colors-git
+        oggfwd
+        oggfwd-bzr
+        python-httpie-oauth
+        setcolors-git
+        mutagen-git
 
     steps:
     - uses: actions/checkout@v2
@@ -44,3 +59,21 @@ jobs:
       with:
         name: ${{ steps.locate.outputs.name }}
         path: ${{ steps.locate.outputs.path }}
+
+      # Publish to AUR by reusing the makepkg docker image, howver do not
+      # execute the default CMD, instead execute the aur-push command with our
+      # publishing ssh key.
+    - name: Publish to AUR4
+      if: ${{ contains(env.auto_publish, matrix.package) && github.event_name == 'push' }}
+      run: |
+        git fetch --prune --unshallow
+        docker run -e EXPORT_PKG=1 -v ${{ github.workspace }}:/pkgs whynothugo/makepkg \
+          /bin/sh -c '\
+            set -e; \
+            sudo pacman -Sy --noconfirm openssh; \
+            eval $(ssh-agent); \
+            ssh-add - <<< "${{ secrets.PRIVATE_KEY_AUR }}"; \
+            mkdir $HOME/.ssh
+            echo "aur.archlinux.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM2DCBtPSTwWvBU3/3bAYwJVtnAmy+GEJf98Ek5QhOXh" >> $HOME/.ssh/known_hosts; \
+            cp -r /pkgs /tmp/pkgs; \
+            /tmp/pkgs/aur-push /tmp/pkgs/${{ matrix.package }}'

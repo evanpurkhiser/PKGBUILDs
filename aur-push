@@ -2,6 +2,7 @@
 # Push a nested directory package to AUR4
 
 set -e
+cd "$(dirname "$0")"
 
 if [ $# -lt 1 ]
 then
@@ -29,7 +30,8 @@ fi
 git subtree split --prefix="$prefix" -b $branch
 
 # Generate .SRCINFO for each commit
+export FILTER_BRANCH_SQUELCH_WARNING=1
 git filter-branch -f --tree-filter "makepkg --printsrcinfo > .SRCINFO" -- $branch
 
-git push $@ ssh+git://aur@aur.archlinux.org/${pkg_name}.git/ $branch:master
+git push $@ ssh+git://aur@aur.archlinux.org/${pkg_name}.git $branch:master
 git branch -D $branch
