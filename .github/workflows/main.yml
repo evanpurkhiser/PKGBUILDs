@@ -74,6 +74,6 @@ jobs:
             eval $(ssh-agent); \
             ssh-add - <<< "${{ secrets.PRIVATE_KEY_AUR }}"; \
             mkdir $HOME/.ssh
-            echo "aur.archlinux.org ssh-ed25519 SHA256:RFzBCUItH9LZS0cKB5UE6ceAYhBD5C8GeOBip8Z11+4" >> $HOME/.ssh/known_hosts; \
+            echo "aur.archlinux.org ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLMiLrP8pVi5BFX2i3vepSUnpedeiewE5XptnUnau+ZoeUOPkpoCgZZuYfpaIQfhhJJI5qgnjJmr4hyJbe/zxow=" >> $HOME/.ssh/known_hosts; \
             cp -r /pkgs /tmp/pkgs; \
             /tmp/pkgs/aur-push /tmp/pkgs/${{ matrix.package }}'
