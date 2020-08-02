@@ -51,7 +51,7 @@ jobs:
     - name: Locate built package
       id: locate
       run: |
-        pkg_path="$(ls ${{ github.workspace }}/${{ matrix.package }}/*.tar.xz)"
+        pkg_path="$(ls ${{ github.workspace }}/${{ matrix.package }}/*.tar.zst)"
         echo ::set-output name=path::$pkg_path
         echo ::set-output name=name::$(basename $pkg_path)
 
