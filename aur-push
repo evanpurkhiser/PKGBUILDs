@@ -4,8 +4,7 @@
 set -e
 cd "$(dirname "$0")"
 
-if [ $# -lt 1 ]
-then
+if [ $# -lt 1 ]; then
     echo "usage: $(basename $0) <path/to/project> [git-push options]" >&2
     exit -1
 fi
@@ -20,8 +19,7 @@ pkg_name=$(basename "$pkg_path")
 prefix=${pkg_path#$git_root}
 branch=aur4/$pkg_name
 
-if [[ ! -d "$pkg_path" || ! -e "${pkg_path}/PKGBUILD" ]]
-then
+if [[ ! -d "$pkg_path" || ! -e "${pkg_path}/PKGBUILD" ]]; then
     echo "$pkg_name does not contain a PKGBUILD" >&2
     exit -1
 fi
