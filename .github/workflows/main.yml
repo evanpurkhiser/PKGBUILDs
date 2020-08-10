@@ -25,7 +25,6 @@ jobs:
         - homebridge-git
         - homebridge-tasmota-git
         - media-center-automation
-        - prolink-tools-git
         - waitress-git
 
     env:
