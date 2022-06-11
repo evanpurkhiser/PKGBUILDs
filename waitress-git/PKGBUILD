@@ -8,7 +8,7 @@ url="https://github.com/EvanPurkhiser/waitress"
 pkgver=39.c0711cf
 pkgrel=1
 
-source=("$pkgname::git+$url.git" "waitress.service" "waitress.conf")
+source=("$pkgname::git+$url" "waitress.service" "waitress.conf")
 md5sums=('SKIP' '2fbcf107949559a5c8f4ee0d8425a598' 'e1d0d2d8eefe3c4189f46886198c2234')
 makedepends=('git' 'go' 'zip' 'dep' 'yarn')
 optdepends=('systemd')

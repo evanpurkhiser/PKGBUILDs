@@ -11,7 +11,7 @@ pkgrel=1
 depends=('nodejs>=4.3.2' 'avahi')
 
 # Python is needed for node-gyp for building native modules
-source=("$pkgname::git+${url}.git" 'homebridge-system.service' 'homebridge-user.service' 'homebridge.install')
+source=("$pkgname::git+$url" 'homebridge-system.service' 'homebridge-user.service' 'homebridge.install')
 install='homebridge.install'
 md5sums=('SKIP'
          '09623f14272d5778d474b9575643a887'

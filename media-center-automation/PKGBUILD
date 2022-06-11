@@ -7,7 +7,7 @@ url="https://github.com/EvanPurkhiser/media-center-automation"
 pkgver=28.55cca85
 pkgrel=1
 
-source=("$pkgname::git://github.com/EvanPurkhiser/media-center-automation")
+source=("$pkgname::git+$url")
 md5sums=('SKIP')
 makedepends=('git')
 depends=('systemd' 'kodi' 'lirc' 'python2' 'python2-dbus' 'python2-gobject2' 'dbus-glib')
