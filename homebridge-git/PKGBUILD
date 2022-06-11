@@ -18,7 +18,7 @@ md5sums=('SKIP'
          '3c257887eac25cdcc27a4d8ed389f0f5'
          '455ddd190ffbf38eeb442db0abd7a469')
 
-makedepends=('git' 'npm' 'python2')
+makedepends=('git' 'npm' 'python')
 provides=('homebridge')
 conflicts=('homebridge')
 arch=('any')
