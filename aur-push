@@ -29,7 +29,7 @@ git subtree split --prefix="$prefix" -b $branch
 
 # Generate .SRCINFO for each commit
 export FILTER_BRANCH_SQUELCH_WARNING=1
-git filter-branch -f --tree-filter "makepkg --printsrcinfo > .SRCINFO" -- $branch
+git filter-branch -f --tree-filter "makepkg --printsrcinfo > .SRCINFO && echo '' >> .SRCINFO" -- $branch
 
 git push $@ ssh+git://aur@aur.archlinux.org/${pkg_name}.git $branch:master
 git branch -D $branch
