@@ -21,7 +21,6 @@ jobs:
         - oggfwd-bzr
         - python-httpie-oauth
         - setcolors-git
-        - mutagen-git
         - homebridge-git
         - homebridge-tasmota-git
         - media-center-automation
@@ -39,7 +38,6 @@ jobs:
         oggfwd-bzr
         python-httpie-oauth
         setcolors-git
-        mutagen-git
 
     steps:
     - uses: actions/checkout@v2
