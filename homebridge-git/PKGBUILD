@@ -14,9 +14,9 @@ depends=('nodejs>=4.3.2' 'avahi')
 source=("$pkgname::git+$url" 'homebridge-system.service' 'homebridge-user.service' 'homebridge.install')
 install='homebridge.install'
 md5sums=('SKIP'
-         '09623f14272d5778d474b9575643a887'
-         '3c257887eac25cdcc27a4d8ed389f0f5'
-         '455ddd190ffbf38eeb442db0abd7a469')
+	'09623f14272d5778d474b9575643a887'
+	'3c257887eac25cdcc27a4d8ed389f0f5'
+	'455ddd190ffbf38eeb442db0abd7a469')
 
 makedepends=('git' 'npm' 'python')
 provides=('homebridge')
@@ -24,17 +24,17 @@ conflicts=('homebridge')
 arch=('any')
 
 pkgver() {
-    cd "$srcdir/$pkgname"
-    echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+	cd "$srcdir/$pkgname"
+	echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
 }
 
 package() {
-  cd "$srcdir"
+	cd "$srcdir"
 
-  npm pack $pkgname/
-  npm install --cache ../cache --user root -g --prefix "$pkgdir/usr" *.tgz
+	npm pack $pkgname/
+	npm install --cache ../cache --user root -g --prefix "$pkgdir/usr" *.tgz
 
-  install -D -m644 "$srcdir/$pkgname/LICENSE" -t "$pkgdir/usr/share/licenses/$homebridge"
-  install -D -m644 "$srcdir/homebridge-system.service" "$pkgdir/usr/lib/systemd/system/homebridge.service"
-  install -D -m644 "$srcdir/homebridge-user.service" "$pkgdir/usr/lib/systemd/user/homebridge.service"
+	install -D -m644 "$srcdir/$pkgname/LICENSE" -t "$pkgdir/usr/share/licenses/$homebridge"
+	install -D -m644 "$srcdir/homebridge-system.service" "$pkgdir/usr/lib/systemd/system/homebridge.service"
+	install -D -m644 "$srcdir/homebridge-user.service" "$pkgdir/usr/lib/systemd/user/homebridge.service"
 }

@@ -19,7 +19,7 @@ BUILD_TREE="$(mktemp -d)"
 trap "{ rm -rf "$BUILD_TREE"; }" EXIT
 
 # Download pkgbuild
-git clone git@github.com:EvanPurkhiser/PKGBUILDs.git "$BUILD_TREE"
+git clone git@github.com:evanpurkhiser/PKGBUILDs.git "$BUILD_TREE"
 cd "$BUILD_TREE/$PROJECT_NAME"
 
 # Build and install

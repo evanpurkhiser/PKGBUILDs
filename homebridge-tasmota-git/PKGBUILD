@@ -3,7 +3,7 @@
 pkgname=homebridge-tasmota-git
 pkgdesc="Homebridge plugin for SonOff devices"
 license=()
-url="https://github.com/EvanPurkhiser/homebridge-tasmota"
+url="https://github.com/evanpurkhiser/homebridge-tasmota"
 pkgver=1
 pkgrel=2
 
@@ -14,13 +14,13 @@ depends=('homebridge')
 arch=('any')
 
 pkgver() {
-    cd "$srcdir/$pkgname"
-    echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+	cd "$srcdir/$pkgname"
+	echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
 }
 
 package() {
-  cd "$srcdir"
+	cd "$srcdir"
 
-  npm pack $pkgname/
-  npm install --cache ../cache --user root -g --prefix "$pkgdir/usr" *.tgz
+	npm pack $pkgname/
+	npm install --cache ../cache --user root -g --prefix "$pkgdir/usr" *.tgz
 }

@@ -4,7 +4,7 @@ gopath_root="go.evanpurkhiser.com"
 pkgname=waitress-git
 pkgdesc="Waitress is a small server that quickly serves up your files with style."
 license=('MIT')
-url="https://github.com/EvanPurkhiser/waitress"
+url="https://github.com/evanpurkhiser/waitress"
 pkgver=39.c0711cf
 pkgrel=1
 
@@ -20,21 +20,21 @@ backup=('etc/waitress.conf')
 options=(!strip)
 
 pkgver() {
-  cd "$srcdir/$pkgname"
+	cd "$srcdir/$pkgname"
 
-  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+	echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
 }
 
 build() {
-  cd "$srcdir/$pkgname"
-  export PATH="$HOME/go/bin:$PATH"
+	cd "$srcdir/$pkgname"
+	export PATH="$HOME/go/bin:$PATH"
 
-  make
+	make
 }
 
 package() {
-  install -D -m0755 "$srcdir/$pkgname/dist/waitress" "$pkgdir/usr/bin/waitress"
-  install -D -m0644 "$srcdir/$pkgname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
-  install -D -m0644 "$srcdir/waitress.service" "$pkgdir/usr/lib/systemd/system/waitress.service"
-  install -D -m0644 "$srcdir/waitress.conf" "$pkgdir/etc/waitress.conf"
+	install -D -m0755 "$srcdir/$pkgname/dist/waitress" "$pkgdir/usr/bin/waitress"
+	install -D -m0644 "$srcdir/$pkgname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	install -D -m0644 "$srcdir/waitress.service" "$pkgdir/usr/lib/systemd/system/waitress.service"
+	install -D -m0644 "$srcdir/waitress.conf" "$pkgdir/etc/waitress.conf"
 }
