@@ -7,7 +7,7 @@ url="https://github.com/evanpurkhiser/homebridge-tasmota"
 pkgver=1
 pkgrel=2
 
-source=("$pkgname::git+$url")
+source=("$pkgname::git+$url.git")
 md5sums=('SKIP')
 makedepends=('git' 'npm')
 depends=('homebridge')
