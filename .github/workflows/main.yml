@@ -2,7 +2,7 @@ name: build
 on:
   push:
   schedule:
-  - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 jobs:
   build:
@@ -13,18 +13,18 @@ jobs:
       fail-fast: false
       matrix:
         package:
-        - dots-manager
-        - keyfinder-cli-git
-        - libkeyfinder-git
-        - mkinitcpio-colors-git
-        - oggfwd
-        - oggfwd-bzr
-        - python-httpie-oauth
-        - setcolors-git
-        - homebridge-git
-        - homebridge-tasmota-git
-        - media-center-automation
-        - waitress-git
+          - dots-manager
+          - keyfinder-cli-git
+          - libkeyfinder-git
+          - mkinitcpio-colors-git
+          - oggfwd
+          - oggfwd-bzr
+          - python-httpie-oauth
+          - setcolors-git
+          - homebridge-git
+          - homebridge-tasmota-git
+          - media-center-automation
+          - waitress-git
 
     env:
       # List of packages which will be auto-published to the AUR. Must be a
@@ -40,37 +40,38 @@ jobs:
         setcolors-git
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Build package
-      run: docker run -e EXPORT_PKG=1 -v ${{ github.workspace }}/${{ matrix.package }}:/pkg whynothugo/makepkg
+      - name: Build package
+        run: docker run -e SYNC_DATABASE=1 -e EXPORT_PKG=1 -v ${{ github.workspace }}/${{ matrix.package }}:/pkg whynothugo/makepkg
 
-    - name: Locate built package
-      id: locate
-      run: |
-        pkg_path="$(ls ${{ github.workspace }}/${{ matrix.package }}/*.tar.zst)"
-        echo ::set-output name=path::$pkg_path
-        echo ::set-output name=name::$(basename $pkg_path)
+      - name: Locate built package
+        id: locate
+        run: |
+          pkg_path="$(ls ${{ github.workspace }}/${{ matrix.package }}/*.tar.zst)"
+          echo ::set-output name=path::$pkg_path
+          echo ::set-output name=name::$(basename $pkg_path)
 
-    - uses: actions/upload-artifact@v1
-      with:
-        name: ${{ steps.locate.outputs.name }}
-        path: ${{ steps.locate.outputs.path }}
+      - uses: actions/upload-artifact@v1
+        with:
+          name: ${{ steps.locate.outputs.name }}
+          path: ${{ steps.locate.outputs.path }}
 
-      # Publish to AUR by reusing the makepkg docker image, howver do not
-      # execute the default CMD, instead execute the aur-push command with our
-      # publishing ssh key.
-    - name: Publish to AUR4
-      if: ${{ contains(env.auto_publish, matrix.package) && github.event_name == 'push' }}
-      run: |
-        git fetch --prune --unshallow
-        docker run -e EXPORT_PKG=1 -v ${{ github.workspace }}:/pkgs whynothugo/makepkg \
-          /bin/sh -c '\
-            set -e; \
-            sudo pacman -Sy --noconfirm openssh; \
-            eval $(ssh-agent); \
-            ssh-add - <<< "${{ secrets.PRIVATE_KEY_AUR }}"; \
-            mkdir $HOME/.ssh
-            echo "aur.archlinux.org ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLMiLrP8pVi5BFX2i3vepSUnpedeiewE5XptnUnau+ZoeUOPkpoCgZZuYfpaIQfhhJJI5qgnjJmr4hyJbe/zxow=" >> $HOME/.ssh/known_hosts; \
-            cp -r /pkgs /tmp/pkgs; \
-            /tmp/pkgs/aur-push /tmp/pkgs/${{ matrix.package }}'
+
+        # Publish to AUR by reusing the makepkg docker image, howver do not
+        # execute the default CMD, instead execute the aur-push command with our
+        # publishing ssh key.
+      - name: Publish to AUR4
+        if: ${{ contains(env.auto_publish, matrix.package) && github.event_name == 'push' }}
+        run: |
+          git fetch --prune --unshallow
+          docker run -e EXPORT_PKG=1 -v ${{ github.workspace }}:/pkgs whynothugo/makepkg \
+            /bin/sh -c '\
+              set -e; \
+              sudo pacman -Sy --noconfirm openssh; \
+              eval $(ssh-agent); \
+              ssh-add - <<< "${{ secrets.PRIVATE_KEY_AUR }}"; \
+              mkdir $HOME/.ssh
+              echo "aur.archlinux.org ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLMiLrP8pVi5BFX2i3vepSUnpedeiewE5XptnUnau+ZoeUOPkpoCgZZuYfpaIQfhhJJI5qgnjJmr4hyJbe/zxow=" >> $HOME/.ssh/known_hosts; \
+              cp -r /pkgs /tmp/pkgs; \
+              /tmp/pkgs/aur-push /tmp/pkgs/${{ matrix.package }}'
