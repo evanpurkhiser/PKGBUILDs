@@ -18,7 +18,6 @@ jobs:
           - libkeyfinder-git
           - mkinitcpio-colors-git
           - oggfwd
-          - oggfwd-bzr
           - python-httpie-oauth
           - setcolors-git
           - homebridge-git
@@ -35,7 +34,6 @@ jobs:
         libkeyfinder-git
         mkinitcpio-colors-git
         oggfwd
-        oggfwd-bzr
         python-httpie-oauth
         setcolors-git
 
