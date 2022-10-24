@@ -38,7 +38,7 @@ jobs:
         setcolors-git
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Build package
         run: docker run -e SYNC_DATABASE=1 -e EXPORT_PKG=1 -v ${{ github.workspace }}/${{ matrix.package }}:/pkg whynothugo/makepkg
@@ -54,7 +54,6 @@ jobs:
         with:
           name: ${{ steps.locate.outputs.name }}
           path: ${{ steps.locate.outputs.path }}
-
 
         # Publish to AUR by reusing the makepkg docker image, howver do not
         # execute the default CMD, instead execute the aur-push command with our
