@@ -22,7 +22,6 @@ jobs:
           - setcolors-git
           - homebridge-git
           - homebridge-tasmota-git
-          - media-center-automation
           - waitress-git
 
     env:
