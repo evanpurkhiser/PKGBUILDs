@@ -64,7 +64,7 @@ jobs:
           docker run -e EXPORT_PKG=1 -v ${{ github.workspace }}:/pkgs whynothugo/makepkg \
             /bin/sh -c '\
               set -e; \
-              sudo pacman -Sy --noconfirm openssh; \
+              sudo pacman -Sy --noconfirm archlinux-keyring openssh; \
               eval $(ssh-agent); \
               ssh-add - <<< "${{ secrets.PRIVATE_KEY_AUR }}"; \
               mkdir $HOME/.ssh
