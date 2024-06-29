@@ -19,7 +19,6 @@ jobs:
           - oggfwd
           - python-httpie-oauth
           - setcolors-git
-          - homebridge-git
           - homebridge-tasmota-git
           - waitress-git
 
