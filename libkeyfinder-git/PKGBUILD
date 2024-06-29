@@ -1,5 +1,5 @@
-#Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
-#Contributor: Lubosz Sarnecki <lubosz@gmail.com>
+# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+# Contributor: Lubosz Sarnecki <lubosz@gmail.com>
 
 pkgname=libkeyfinder-git
 pkgdesc="Musical key detection for digital audio."
