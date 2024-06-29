@@ -16,7 +16,6 @@ jobs:
           - keyfinder-cli-git
           - libkeyfinder-git
           - mkinitcpio-colors-git
-          - oggfwd
           - setcolors-git
           - waitress-git
 
