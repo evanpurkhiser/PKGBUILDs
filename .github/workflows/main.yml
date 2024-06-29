@@ -56,7 +56,7 @@ jobs:
         if: ${{ contains(env.auto_publish, matrix.package) && github.event_name == 'push' }}
         run: |
           git fetch --prune --unshallow
-          docker run -e EXPORT_PKG=1 -v ${{ github.workspace }}:/pkgs whynothugo/makepkg \
+          docker run -e SYNC_DATABASE=1 -v ${{ github.workspace }}:/pkgs whynothugo/makepkg \
             /bin/sh -c '\
               set -e; \
               sudo pacman -Sy --noconfirm archlinux-keyring openssh; \
