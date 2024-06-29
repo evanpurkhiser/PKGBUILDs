@@ -18,7 +18,6 @@ jobs:
           - mkinitcpio-colors-git
           - oggfwd
           - setcolors-git
-          - homebridge-tasmota-git
           - waitress-git
 
     env:
