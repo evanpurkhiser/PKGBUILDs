@@ -7,8 +7,8 @@ url="https://github.com/evanpurkhiser/keyfinder-cli"
 pkgver=40.91ec8bb
 pkgrel=1
 
-provides=(keyfinder-cli)
-conflicts=(keyfinder-cli)
+provides=('keyfinder-cli')
+conflicts=('keyfinder-cli')
 
 source=("$pkgname::git+$url.git")
 md5sums=('SKIP')
