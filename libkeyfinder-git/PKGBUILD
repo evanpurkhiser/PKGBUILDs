@@ -4,7 +4,7 @@
 pkgname=libkeyfinder-git
 pkgdesc="Musical key detection for digital audio."
 url="https://github.com/mixxxdj/libkeyfinder"
-license=('GPL3')
+license=('GPL-3.0-or-later')
 pkgver=333.4e1a502
 pkgrel=1
 
