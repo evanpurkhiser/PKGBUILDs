@@ -1,10 +1,9 @@
 # Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
 
-_pkgname=mkinitcpio-colors
-pkgname=${_pkgname}-git
+pkgname=mkinitcpio-colors-git
 pkgdesc="mkinitcpio hook to set VT console colors during early userspace"
 license=('MIT')
-url="https://github.com/evanpurkhiser/${_pkgname}"
+url="https://github.com/evanpurkhiser/mkinitcpio-colors"
 pkgver=11.ac5765f
 pkgrel=1
 
@@ -32,5 +31,5 @@ package() {
 
 	install -Dm 644 setcolors.service "${pkgdir}/usr/lib/systemd/system/setcolors.service"
 
-	install -Dm 644 "LICENSE" "${pkgdir}/usr/share/licenses/${_pkgname}/LICENSE"
+	install -Dm 644 "LICENSE" "${pkgdir}/usr/share/licenses/mkinitcpio-colors/LICENSE"
 }
