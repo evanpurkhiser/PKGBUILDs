@@ -41,10 +41,20 @@ jobs:
             -w /pkg \
             archlinux:base-devel \
             /bin/bash -c '\
+              set -e
               pacman -Syu --noconfirm && \
+              pacman -S --noconfirm git sudo && \
               useradd -m builder && \
+              echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
               chown -R builder:builder /pkg && \
-              su builder -c "makepkg -s --noconfirm"'
+              su builder -c "\
+                cd /tmp && \
+                git clone https://aur.archlinux.org/yay.git && \
+                cd yay && \
+                makepkg -si --noconfirm && \
+                cd /pkg && \
+                yay -S --noconfirm --removemake --answerclean None --answerdiff None --builddir /tmp && \
+                makepkg -s --noconfirm"'
 
       - name: Locate built package
         id: locate
