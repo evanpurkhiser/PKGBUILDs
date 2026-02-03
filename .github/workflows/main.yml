@@ -42,6 +42,8 @@ jobs:
             archlinux:base-devel \
             /bin/bash -c '\
               set -e
+              pacman-key --init && \
+              pacman-key --populate && \
               pacman -Syu --noconfirm && \
               pacman -S --noconfirm git sudo && \
               useradd -m builder && \
