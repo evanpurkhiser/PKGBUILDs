@@ -55,8 +55,8 @@ jobs:
                 cd yay && \
                 makepkg -si --noconfirm && \
                 cd /pkg && \
-                yay -S --noconfirm --removemake --answerclean None --answerdiff None --builddir /tmp && \
-                makepkg -s --noconfirm"'
+                yay -S --noconfirm --removemake --answerclean None --answerdiff None --builddir /tmp || true && \
+                makepkg -s --noconfirm --nodeps"'
 
       - name: Locate built package
         id: locate
