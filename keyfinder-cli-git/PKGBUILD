@@ -18,12 +18,18 @@ arch=('i686' 'x86_64')
 
 pkgver() {
 	cd "$srcdir/$pkgname"
-	git describe --long --abbrev=7 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+	git describe --long --tags --abbrev=7 | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
 	cd "$srcdir/$pkgname"
-	cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=None
+	cmake -S . -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_C_FLAGS_RELEASE="${CFLAGS}" \
+		-DCMAKE_CXX_FLAGS_RELEASE="${CXXFLAGS}" \
+		-DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
+		-DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS}"
 	cmake --build build
 }
 

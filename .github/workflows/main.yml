@@ -15,21 +15,14 @@ jobs:
           - dots-manager
           - keyfinder-cli-git
           - libkeyfinder-git
-          - mkinitcpio-colors-git
           - setcolors-git
           - waitress-git
 
     env:
       # List of packages which will be auto-published to the AUR. Must be a
       # string as github does not let you pass arrays as environment variables.
-      auto_publish: |
-        dots-manager
-        keyfinder-cli-git
-        libkeyfinder-git
-        mkinitcpio-colors-git
-        oggfwd
-        python-httpie-oauth
-        setcolors-git
+      # Currently disabled - packages maintained by others
+      auto_publish: ""
 
     steps:
       - uses: actions/checkout@v3
