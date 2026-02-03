@@ -62,24 +62,23 @@ jobs:
           name: ${{ steps.locate.outputs.name }}
           path: ${{ steps.locate.outputs.path }}
 
-        # Publish to AUR by reusing the makepkg docker image, howver do not
-        # execute the default CMD, instead execute the aur-push command with our
-        # publishing ssh key.
-        # TEMPORARILY DISABLED while testing new build setup
-      - name: Publish to AUR4
-        if: false  # ${{ contains(env.auto_publish, matrix.package) && github.event_name == 'push' }}
+        # Publish to AUR using the aur-push script with SSH key
+      - name: Publish to AUR
+        if: ${{ contains(env.auto_publish, matrix.package) && github.event_name == 'push' }}
         run: |
           git fetch --prune --unshallow
-          docker run -e SYNC_DATABASE=1 -v ${{ github.workspace }}:/pkgs whynothugo/makepkg \
-            /bin/sh -c '\
-              set -e; \
-              sudo rm -rf /etc/pacman.d/gnupg/; \
-              sudo pacman-key --init; \
-              sudo pacman-key --populate; \
-              sudo pacman -Sy --noconfirm openssh; \
-              eval $(ssh-agent); \
-              ssh-add - <<< "${{ secrets.PRIVATE_KEY_AUR }}"; \
-              mkdir $HOME/.ssh
-              echo "aur.archlinux.org ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLMiLrP8pVi5BFX2i3vepSUnpedeiewE5XptnUnau+ZoeUOPkpoCgZZuYfpaIQfhhJJI5qgnjJmr4hyJbe/zxow=" >> $HOME/.ssh/known_hosts; \
-              cp -r /pkgs /tmp/pkgs; \
-              /tmp/pkgs/aur-push /tmp/pkgs/${{ matrix.package }}'
+          docker run --rm \
+            -v ${{ github.workspace }}:/pkgs \
+            -w /pkgs \
+            archlinux:base-devel \
+            /bin/bash -c '\
+              set -e
+              pacman-key --init && \
+              pacman-key --populate && \
+              pacman -Syu --noconfirm && \
+              pacman -S --noconfirm openssh git && \
+              eval $(ssh-agent) && \
+              ssh-add - <<< "${{ secrets.PRIVATE_KEY_AUR }}" && \
+              mkdir -p $HOME/.ssh && \
+              echo "aur.archlinux.org ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLMiLrP8pVi5BFX2i3vepSUnpedeiewE5XptnUnau+ZoeUOPkpoCgZZuYfpaIQfhhJJI5qgnjJmr4hyJbe/zxow=" >> $HOME/.ssh/known_hosts && \
+              /pkgs/aur-push /pkgs/${{ matrix.package }}'
