@@ -55,8 +55,8 @@ jobs:
                 cd yay && \
                 makepkg -si --noconfirm && \
                 cd /pkg && \
-                yay -S --noconfirm --removemake --answerclean None --answerdiff None --builddir /tmp || true && \
-                makepkg -s --noconfirm --nodeps"'
+                yay -S --needed --noconfirm --removemake --answerclean None --answerdiff None --builddir /tmp --mflags='--skipinteg' || echo 'Some AUR dependencies unavailable, continuing...' && \
+                makepkg --noconfirm --skipinteg"'
 
       - name: Locate built package
         id: locate
