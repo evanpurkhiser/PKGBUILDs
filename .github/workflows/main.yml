@@ -35,7 +35,16 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Build package
-        run: docker run -e SYNC_DATABASE=1 -e EXPORT_PKG=1 -v ${{ github.workspace }}/${{ matrix.package }}:/pkg whynothugo/makepkg
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/${{ matrix.package }}:/pkg \
+            -w /pkg \
+            archlinux:base-devel \
+            /bin/bash -c '\
+              pacman -Syu --noconfirm && \
+              useradd -m builder && \
+              chown -R builder:builder /pkg && \
+              su builder -c "makepkg -s --noconfirm"'
 
       - name: Locate built package
         id: locate
@@ -52,8 +61,9 @@ jobs:
         # Publish to AUR by reusing the makepkg docker image, howver do not
         # execute the default CMD, instead execute the aur-push command with our
         # publishing ssh key.
+        # TEMPORARILY DISABLED while testing new build setup
       - name: Publish to AUR4
-        if: ${{ contains(env.auto_publish, matrix.package) && github.event_name == 'push' }}
+        if: false  # ${{ contains(env.auto_publish, matrix.package) && github.event_name == 'push' }}
         run: |
           git fetch --prune --unshallow
           docker run -e SYNC_DATABASE=1 -v ${{ github.workspace }}:/pkgs whynothugo/makepkg \
