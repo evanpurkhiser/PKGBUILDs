@@ -16,13 +16,14 @@ jobs:
           - keyfinder-cli-git
           - libkeyfinder-git
           - setcolors-git
+          - things3-cloud
+          - things3-cloud-bin
           - waitress-git
 
     env:
       # List of packages which will be auto-published to the AUR. Must be a
       # string as github does not let you pass arrays as environment variables.
-      # Currently disabled - packages maintained by others
-      auto_publish: ""
+      auto_publish: "things3-cloud things3-cloud-bin"
 
     steps:
       - uses: actions/checkout@v3
@@ -77,6 +78,7 @@ jobs:
               pacman-key --populate && \
               pacman -Syu --noconfirm && \
               pacman -S --noconfirm openssh git && \
+              git config --global --add safe.directory /pkgs && \
               eval $(ssh-agent) && \
               ssh-add - <<< "${{ secrets.PRIVATE_KEY_AUR }}" && \
               mkdir -p $HOME/.ssh && \
