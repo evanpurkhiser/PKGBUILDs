@@ -77,10 +77,14 @@ jobs:
               pacman-key --init && \
               pacman-key --populate && \
               pacman -Syu --noconfirm && \
-              pacman -S --noconfirm openssh git && \
-              git config --global --add safe.directory /pkgs && \
-              eval $(ssh-agent) && \
-              ssh-add - <<< "${{ secrets.PRIVATE_KEY_AUR }}" && \
-              mkdir -p $HOME/.ssh && \
-              echo "aur.archlinux.org ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLMiLrP8pVi5BFX2i3vepSUnpedeiewE5XptnUnau+ZoeUOPkpoCgZZuYfpaIQfhhJJI5qgnjJmr4hyJbe/zxow=" >> $HOME/.ssh/known_hosts && \
-              /pkgs/aur-push /pkgs/${{ matrix.package }}'
+              pacman -S --noconfirm openssh git sudo && \
+              useradd -m builder && \
+              echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+              chown -R builder:builder /pkgs && \
+              su builder -s /bin/bash -c "\
+                git config --global --add safe.directory /pkgs && \
+                eval \\\$(ssh-agent) && \
+                ssh-add - <<< \"${{ secrets.PRIVATE_KEY_AUR }}\" && \
+                mkdir -p \\\$HOME/.ssh && \
+                echo \"aur.archlinux.org ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLMiLrP8pVi5BFX2i3vepSUnpedeiewE5XptnUnau+ZoeUOPkpoCgZZuYfpaIQfhhJJI5qgnjJmr4hyJbe/zxow=\" >> \\\$HOME/.ssh/known_hosts && \
+                /pkgs/aur-push /pkgs/${{ matrix.package }}"'
