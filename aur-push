@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Push a nested directory package to AUR4
 
 set -e
@@ -19,7 +19,7 @@ pkg_name=$(basename "$pkg_path")
 prefix=${pkg_path#$git_root}
 branch=aur4/$pkg_name
 
-if [[ ! -d "$pkg_path" || ! -e "${pkg_path}/PKGBUILD" ]]; then
+if [ ! -d "$pkg_path" ] || [ ! -e "${pkg_path}/PKGBUILD" ]; then
     echo "$pkg_name does not contain a PKGBUILD" >&2
     exit -1
 fi
