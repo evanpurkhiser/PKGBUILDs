@@ -11,4 +11,4 @@ useradd -m builder
 echo "builder ALL=(ALL) NOPASSWD: ALL" >>/etc/sudoers
 chown -R builder:builder /pkgs
 
-su builder -s /bin/bash -c "/pkgs/ci/publish-aur.sh \"$PACKAGE\""
+sudo -u builder -E /pkgs/ci/publish-aur.sh "$PACKAGE"
