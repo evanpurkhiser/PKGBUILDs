@@ -18,7 +18,6 @@ jobs:
           - setcolors-git
           - things3-cloud
           - things3-cloud-bin
-          - waitress-git
 
     env:
       # List of packages which will be auto-published to the AUR. Must be a
