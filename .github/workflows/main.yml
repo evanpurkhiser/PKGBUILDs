@@ -1,31 +1,119 @@
 name: build
 on:
   push:
+    branches:
+      - main
   workflow_dispatch:
+    inputs:
+      package:
+        description: Package to bump and build
+        required: true
+        type: string
+      version:
+        description: New pkgver to set before build
+        required: true
+        type: string
 
 jobs:
+  prepare:
+    name: resolve package matrix
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.packages.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: packages
+        run: |
+          PACKAGE="${{ github.event.inputs.package }}"
+          VERSION="${{ github.event.inputs.version }}"
+
+          if [ -n "$PACKAGE" ]; then
+            if [ ! -f "$PACKAGE/PKGBUILD" ]; then
+              echo "Package '$PACKAGE' does not exist or has no PKGBUILD" >&2
+              exit 1
+            fi
+            PACKAGES=$(printf '["%s"]' "$PACKAGE")
+          else
+            PACKAGES=$(python3 -c 'import json; from pathlib import Path; pkgs = sorted(p.parent.name for p in Path(".").glob("*/PKGBUILD")); print(json.dumps(pkgs))')
+          fi
+
+          echo "packages=$PACKAGES" >> "$GITHUB_OUTPUT"
   build:
     name: build
+    needs: prepare
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        package:
-          - dots-manager
-          - keyfinder-cli-git
-          - libkeyfinder-git
-          - setcolors-git
-          - things3-cloud
-          - things3-cloud-bin
+        package: ${{ fromJSON(needs.prepare.outputs.packages) }}
+
+    permissions:
+      contents: write
 
     env:
       # List of packages which will be auto-published to the AUR. Must be a
-      # string as github does not let you pass arrays as environment variables.
-      auto_publish: "things3-cloud things3-cloud-bin"
+      # JSON string because env vars are strings in GitHub Actions.
+      auto_publish: '["things3-cloud", "things3-cloud-bin"]'
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Bump PKGBUILD version and checksums
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          PACKAGE="${{ matrix.package }}"
+          VERSION="${{ github.event.inputs.version }}"
+          PKGBUILD_PATH="${PACKAGE}/PKGBUILD"
+
+          python3 - "$PKGBUILD_PATH" "$VERSION" <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          path = Path(sys.argv[1])
+          version = sys.argv[2]
+          text = path.read_text()
+
+          text, pkgver_count = re.subn(r'^pkgver=.*$', f'pkgver={version}', text, count=1, flags=re.MULTILINE)
+          if pkgver_count != 1:
+            raise SystemExit(f"Failed to update pkgver in {path}")
+
+          text, _ = re.subn(r'^pkgrel=.*$', 'pkgrel=1', text, count=1, flags=re.MULTILINE)
+          path.write_text(text)
+          PY
+
+          RUNNER_UID="$(id -u)"
+          RUNNER_GID="$(id -g)"
+          docker run --rm \
+            -e RUNNER_UID="$RUNNER_UID" \
+            -e RUNNER_GID="$RUNNER_GID" \
+            -v "${{ github.workspace }}/${PACKAGE}:/pkg" \
+            -w /pkg \
+            archlinux:base-devel \
+            /bin/bash -c '\
+              set -e
+              pacman-key --init && \
+              pacman-key --populate && \
+              pacman -Syu --noconfirm && \
+              pacman -S --noconfirm pacman-contrib && \
+              updpkgsums && \
+              chown "$RUNNER_UID:$RUNNER_GID" PKGBUILD'
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add "$PKGBUILD_PATH"
+          if git diff --cached --quiet; then
+            echo "No PKGBUILD/checksum changes detected for ${PACKAGE}"
+          else
+            git commit -m "${PACKAGE}: bump to v${VERSION}"
+
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
 
       - name: Build package
         run: |
@@ -54,8 +142,8 @@ jobs:
         id: locate
         run: |
           pkg_path="$(ls ${{ github.workspace }}/${{ matrix.package }}/*.tar.zst)"
-          echo ::set-output name=path::$pkg_path
-          echo ::set-output name=name::$(basename $pkg_path)
+          echo "path=$pkg_path" >> "$GITHUB_OUTPUT"
+          echo "name=$(basename "$pkg_path")" >> "$GITHUB_OUTPUT"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -64,9 +152,9 @@ jobs:
 
         # Publish to AUR using the aur-push script with SSH key
       - name: Publish to AUR
-        if: ${{ contains(env.auto_publish, matrix.package) && github.event_name == 'push' }}
+        if: ${{ contains(fromJSON(env.auto_publish), matrix.package) }}
         run: |
-          git fetch --prune --unshallow
+          git fetch --prune
           docker run --rm \
             -e PRIVATE_KEY_AUR="${{ secrets.PRIVATE_KEY_AUR }}" \
             -e PACKAGE="${{ matrix.package }}" \
