@@ -98,8 +98,10 @@ jobs:
               pacman-key --init && \
               pacman-key --populate && \
               pacman -Syu --noconfirm && \
-              pacman -S --noconfirm pacman-contrib && \
-              updpkgsums && \
+              pacman -S --noconfirm pacman-contrib sudo && \
+              useradd -m builder && \
+              chown -R builder:builder /pkg && \
+              su builder -c "cd /pkg && updpkgsums" && \
               chown "$RUNNER_UID:$RUNNER_GID" PKGBUILD'
 
           git config user.name "github-actions[bot]"
