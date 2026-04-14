@@ -164,4 +164,4 @@ jobs:
             -v ${{ github.workspace }}:/pkgs \
             -w /pkgs \
             archlinux:base-devel \
-            /bin/bash /pkgs/ci/publish-in-container.sh
+            /bin/bash /pkgs/.github/scripts/publish-in-container.sh

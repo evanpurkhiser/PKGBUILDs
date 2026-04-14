@@ -11,4 +11,4 @@ useradd -m builder
 echo "builder ALL=(ALL) NOPASSWD: ALL" >>/etc/sudoers
 chown -R builder:builder /pkgs
 
-sudo -H -u builder env PRIVATE_KEY_AUR="$PRIVATE_KEY_AUR" /pkgs/ci/publish-aur.sh "$PACKAGE"
+sudo -H -u builder env PRIVATE_KEY_AUR="$PRIVATE_KEY_AUR" /pkgs/.github/scripts/publish-aur.sh "$PACKAGE"
