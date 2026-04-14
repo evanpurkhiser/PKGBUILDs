@@ -102,7 +102,7 @@ jobs:
               useradd -m builder && \
               chown -R builder:builder /pkg && \
               su builder -c "cd /pkg && updpkgsums" && \
-              chown "$RUNNER_UID:$RUNNER_GID" PKGBUILD'
+              chown -R "$RUNNER_UID:$RUNNER_GID" /pkg'
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
