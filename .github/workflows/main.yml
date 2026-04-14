@@ -127,6 +127,7 @@ jobs:
               pacman-key --populate && \
               pacman -Syu --noconfirm && \
               pacman -S --noconfirm git sudo && \
+              sed -i '/^OPTIONS=/s/\<debug\>/!debug/' /etc/makepkg.conf && \
               useradd -m builder && \
               echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
               chown -R builder:builder /pkg && \
