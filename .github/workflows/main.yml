@@ -54,7 +54,7 @@ jobs:
     env:
       # List of packages which will be auto-published to the AUR. Must be a
       # JSON string because env vars are strings in GitHub Actions.
-      auto_publish: '["things3-cloud", "things3-cloud-bin"]'
+      auto_publish: '["things3-cloud", "things3-cloud-bin", "tmux-ai-titles"]'
 
     steps:
       - uses: actions/checkout@v3
