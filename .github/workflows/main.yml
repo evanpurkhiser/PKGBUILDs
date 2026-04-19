@@ -14,6 +14,10 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   prepare:
     name: resolve package matrix
@@ -25,7 +29,6 @@ jobs:
       - id: packages
         run: |
           PACKAGE="${{ github.event.inputs.package }}"
-          VERSION="${{ github.event.inputs.version }}"
 
           if [ -n "$PACKAGE" ]; then
             if [ ! -f "$PACKAGE/PKGBUILD" ]; then
@@ -149,7 +152,7 @@ jobs:
             ${{ github.workspace }}/${{ matrix.package }}/*.pkg.tar.zst.sig
           if-no-files-found: error
 
-        # Publish to AUR using the aur-push script with SSH key
+      # Publish to AUR using the aur-push script with SSH key
       - name: Publish to AUR
         if: ${{ contains(fromJSON(env.auto_publish), matrix.package) }}
         run: |
@@ -176,8 +179,6 @@ jobs:
       REPO_DB_NAME: pacman-repo
 
     steps:
-      - uses: actions/checkout@v3
-
       - name: Download newly built package artifacts
         uses: actions/download-artifact@v4
         with:
@@ -241,27 +242,8 @@ jobs:
                 exit 1
               fi
 
-              repo-add --remove --files "repo/x86_64/${REPO_DB_NAME}.db.tar.zst" "${new_repo_pkgs[@]}"
-
-              tar --zstd -xOf "repo/x86_64/${REPO_DB_NAME}.db.tar.zst" --wildcards "*/desc" \
-                | awk '\''prev == "%FILENAME%" { print; prev=""; next } { prev=$0 }'\'' \
-                > referenced-packages.txt
+              repo-add --remove "repo/x86_64/${REPO_DB_NAME}.db.tar.zst" "${new_repo_pkgs[@]}"
             '
-
-          mapfile -t referenced < referenced-packages.txt
-          declare -A keep
-          for file in "${referenced[@]}"; do
-            keep["$file"]=1
-            keep["${file}.sig"]=1
-          done
-
-          shopt -s nullglob
-          for file in repo/x86_64/*.pkg.tar.zst repo/x86_64/*.pkg.tar.zst.sig; do
-            base="$(basename "$file")"
-            if [[ -z "${keep[$base]+x}" ]]; then
-              rm -f "$file"
-            fi
-          done
 
       - name: Publish rolling release
         env:
