@@ -141,17 +141,13 @@ jobs:
                 cd /pkg && \
                 makepkg -s --noconfirm --skipinteg || (echo Build failed, trying without dependency checks && makepkg --noconfirm --skipinteg --nodeps)"'
 
-      - name: Locate built package
-        id: locate
-        run: |
-          pkg_path="$(ls ${{ github.workspace }}/${{ matrix.package }}/*.tar.zst)"
-          echo "path=$pkg_path" >> "$GITHUB_OUTPUT"
-          echo "name=$(basename "$pkg_path")" >> "$GITHUB_OUTPUT"
-
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.locate.outputs.name }}
-          path: ${{ steps.locate.outputs.path }}
+          name: ${{ matrix.package }}-pkgs
+          path: |
+            ${{ github.workspace }}/${{ matrix.package }}/*.pkg.tar.zst
+            ${{ github.workspace }}/${{ matrix.package }}/*.pkg.tar.zst.sig
+          if-no-files-found: error
 
         # Publish to AUR using the aur-push script with SSH key
       - name: Publish to AUR
@@ -165,3 +161,126 @@ jobs:
             -w /pkgs \
             archlinux:base-devel \
             /bin/bash /pkgs/.github/scripts/publish-in-container.sh
+
+  publish-repo:
+    name: publish pacman repo release
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pacman-repo-release
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: pacman-repo
+      REPO_DB_NAME: pacman-repo
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download newly built package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: new-artifacts
+          merge-multiple: true
+
+      - name: Download current release packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p old-packages
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            gh release download "$RELEASE_TAG" --dir old-packages --pattern "*.pkg.tar.zst" || true
+            gh release download "$RELEASE_TAG" --dir old-packages --pattern "*.pkg.tar.zst.sig" || true
+          else
+            echo "No existing release '$RELEASE_TAG' found. Starting with only newly built packages."
+          fi
+
+      - name: Merge package sets and generate pacman repo database
+        run: |
+          set -euo pipefail
+
+          mkdir -p repo/x86_64
+
+          cp -f old-packages/*.pkg.tar.zst repo/x86_64/ 2>/dev/null || true
+          cp -f old-packages/*.pkg.tar.zst.sig repo/x86_64/ 2>/dev/null || true
+
+          shopt -s nullglob
+          new_pkgs=(new-artifacts/*.pkg.tar.zst)
+
+          if [ ${#new_pkgs[@]} -eq 0 ]; then
+            echo "No newly built package artifacts were found."
+            exit 1
+          fi
+
+          for pkg in "${new_pkgs[@]}"; do
+            cp -f "$pkg" repo/x86_64/
+
+            sig_path="${pkg}.sig"
+            if [ -f "$sig_path" ]; then
+              cp -f "$sig_path" repo/x86_64/
+            fi
+          done
+
+          docker run --rm \
+            -e REPO_DB_NAME="$REPO_DB_NAME" \
+            -v "$PWD:/work" \
+            -w /work \
+            archlinux:base-devel \
+            /bin/bash -lc '
+              set -euo pipefail
+              shopt -s nullglob
+
+              new_repo_pkgs=()
+              for pkg in new-artifacts/*.pkg.tar.zst; do
+                new_repo_pkgs+=("repo/x86_64/$(basename "$pkg")")
+              done
+
+              if [ ${#new_repo_pkgs[@]} -eq 0 ]; then
+                echo "No newly built package artifacts were found."
+                exit 1
+              fi
+
+              repo-add --remove --files "repo/x86_64/${REPO_DB_NAME}.db.tar.zst" "${new_repo_pkgs[@]}"
+
+              tar --zstd -xOf "repo/x86_64/${REPO_DB_NAME}.db.tar.zst" --wildcards "*/desc" \
+                | awk '\''prev == "%FILENAME%" { print; prev=""; next } { prev=$0 }'\'' \
+                > referenced-packages.txt
+            '
+
+          mapfile -t referenced < referenced-packages.txt
+          declare -A keep
+          for file in "${referenced[@]}"; do
+            keep["$file"]=1
+            keep["${file}.sig"]=1
+          done
+
+          shopt -s nullglob
+          for file in repo/x86_64/*.pkg.tar.zst repo/x86_64/*.pkg.tar.zst.sig; do
+            base="$(basename "$file")"
+            if [[ -z "${keep[$base]+x}" ]]; then
+              rm -f "$file"
+            fi
+          done
+
+      - name: Publish rolling release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            mapfile -t existing_assets < <(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name')
+            for asset in "${existing_assets[@]}"; do
+              if [ ! -f "repo/x86_64/${asset}" ]; then
+                gh release delete-asset "$RELEASE_TAG" "$asset" --yes
+              fi
+            done
+
+            gh release upload "$RELEASE_TAG" repo/x86_64/* --clobber
+          else
+            gh release create "$RELEASE_TAG" \
+              --title "$RELEASE_TAG" \
+              --notes "Automated pacman repository publish from ${GITHUB_SHA}." \
+              repo/x86_64/*
+          fi
