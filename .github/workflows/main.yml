@@ -176,7 +176,7 @@ jobs:
       contents: write
     env:
       RELEASE_TAG: pacman-repo
-      REPO_DB_NAME: pacman-repo
+      REPO_DB_NAME: evanpurkhiser
 
     steps:
       - name: Download newly built package artifacts
