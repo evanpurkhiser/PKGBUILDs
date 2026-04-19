@@ -188,6 +188,7 @@ jobs:
       - name: Download current release packages
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           mkdir -p old-packages
           if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
@@ -248,6 +249,7 @@ jobs:
       - name: Publish rolling release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
 
