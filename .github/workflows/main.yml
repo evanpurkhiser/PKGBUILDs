@@ -181,8 +181,11 @@ jobs:
         run: |
           mkdir -p old-packages
           if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
-            mapfile -t package_assets < <(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name | select(test("\\.pkg\\.tar\\.zst(\\.sig)?$"))')
-            for asset in "${package_assets[@]}"; do
+            # Download packages AND the existing repo db. The db is required
+            # so that repo-add --remove can drop prior-version package files
+            # (both .pkg.tar.zst and .sig) from disk when a package is rebuilt.
+            mapfile -t assets < <(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name | select(test("\\.(pkg\\.tar\\.zst|db|files)(\\.tar\\.zst)?(\\.sig)?$"))')
+            for asset in "${assets[@]}"; do
               gh release download "$RELEASE_TAG" --dir old-packages --pattern "$asset"
             done
           else
@@ -199,12 +202,11 @@ jobs:
 
           shopt -s nullglob
 
-          for pkg in old-packages/*.pkg.tar.zst; do
-            cp -f "$pkg" repo/x86_64/
-          done
-
-          for sig in old-packages/*.pkg.tar.zst.sig; do
-            cp -f "$sig" repo/x86_64/
+          # Seed with existing release assets (packages + db). The db is
+          # needed so repo-add --remove can clean up prior-version files
+          # when a package is rebuilt.
+          for f in old-packages/*; do
+            cp -f "$f" repo/x86_64/
           done
 
           new_pkgs=(new-artifacts/*.pkg.tar.zst)
