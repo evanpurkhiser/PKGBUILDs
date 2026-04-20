@@ -58,6 +58,7 @@ jobs:
       # List of packages which will be auto-published to the AUR. Must be a
       # JSON string because env vars are strings in GitHub Actions.
       auto_publish: '["things3-cloud", "tmux-ai-titles"]'
+      GPG_PACKAGE_SIGNING_KEY: ${{ secrets.GPG_PACKAGE_SIGNING_KEY }}
 
     steps:
       - uses: actions/checkout@v3
@@ -123,11 +124,22 @@ jobs:
       - name: Build package
         run: |
           docker run --rm \
+            -e GPG_PACKAGE_SIGNING_KEY="${{ env.GPG_PACKAGE_SIGNING_KEY }}" \
             -v ${{ github.workspace }}/${{ matrix.package }}:/pkg \
             -w /pkg \
             archlinux:base-devel \
             /bin/bash -c '\
               set -e
+
+              if [ -z "${GPG_PACKAGE_SIGNING_KEY:-}" ]; then
+                echo "GPG_PACKAGE_SIGNING_KEY secret is not set."
+                exit 1
+              fi
+
+              key_file=/tmp/gpg-package-signing-key.asc
+              printf "%s\n" "$GPG_PACKAGE_SIGNING_KEY" > "$key_file"
+              chmod 0600 "$key_file"
+
               pacman-key --init && \
               pacman-key --populate && \
               pacman -Syu --noconfirm && \
@@ -135,14 +147,19 @@ jobs:
               sed -i "/^OPTIONS=/s/\\<debug\\>/!debug/" /etc/makepkg.conf && \
               useradd -m builder && \
               echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+              chown builder:builder "$key_file" && \
               chown -R builder:builder /pkg && \
               su builder -c "\
                 cd /tmp && \
+                gpg --batch --import $key_file && \
+                signing_key_fpr=\$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print \$10; exit}') && \
+                test -n \"\$signing_key_fpr\" && \
                 git clone https://aur.archlinux.org/yay.git && \
                 cd yay && \
                 makepkg -si --noconfirm && \
                 cd /pkg && \
-                makepkg -s --noconfirm --skipinteg || (echo Build failed, trying without dependency checks && makepkg --noconfirm --skipinteg --nodeps)"'
+                makepkg -s --noconfirm --sign --key \"\$signing_key_fpr\"" && \
+              rm -f "$key_file"'
 
       - uses: actions/upload-artifact@v4
         with:
@@ -192,22 +209,32 @@ jobs:
         run: |
           mkdir -p old-packages
           if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
-            gh release download "$RELEASE_TAG" --dir old-packages --pattern "*.pkg.tar.zst" || true
-            gh release download "$RELEASE_TAG" --dir old-packages --pattern "*.pkg.tar.zst.sig" || true
+            mapfile -t package_assets < <(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name | select(test("\\.pkg\\.tar\\.zst(\\.sig)?$"))')
+            for asset in "${package_assets[@]}"; do
+              gh release download "$RELEASE_TAG" --dir old-packages --pattern "$asset"
+            done
           else
             echo "No existing release '$RELEASE_TAG' found. Starting with only newly built packages."
           fi
 
       - name: Merge package sets and generate pacman repo database
+        env:
+          GPG_PACKAGE_SIGNING_KEY: ${{ secrets.GPG_PACKAGE_SIGNING_KEY }}
         run: |
           set -euo pipefail
 
           mkdir -p repo/x86_64
 
-          cp -f old-packages/*.pkg.tar.zst repo/x86_64/ 2>/dev/null || true
-          cp -f old-packages/*.pkg.tar.zst.sig repo/x86_64/ 2>/dev/null || true
-
           shopt -s nullglob
+
+          for pkg in old-packages/*.pkg.tar.zst; do
+            cp -f "$pkg" repo/x86_64/
+          done
+
+          for sig in old-packages/*.pkg.tar.zst.sig; do
+            cp -f "$sig" repo/x86_64/
+          done
+
           new_pkgs=(new-artifacts/*.pkg.tar.zst)
 
           if [ ${#new_pkgs[@]} -eq 0 ]; then
@@ -221,17 +248,34 @@ jobs:
             sig_path="${pkg}.sig"
             if [ -f "$sig_path" ]; then
               cp -f "$sig_path" repo/x86_64/
+            else
+              echo "Missing signature for newly built package: ${pkg}"
+              exit 1
             fi
           done
 
           docker run --rm \
             -e REPO_DB_NAME="$REPO_DB_NAME" \
+            -e GPG_PACKAGE_SIGNING_KEY="$GPG_PACKAGE_SIGNING_KEY" \
             -v "$PWD:/work" \
             -w /work \
             archlinux:base-devel \
             /bin/bash -lc '
               set -euo pipefail
               shopt -s nullglob
+
+              if [ -z "${GPG_PACKAGE_SIGNING_KEY:-}" ]; then
+                echo "GPG_PACKAGE_SIGNING_KEY secret is not set."
+                exit 1
+              fi
+
+              printf "%s\n" "$GPG_PACKAGE_SIGNING_KEY" | gpg --batch --import
+
+              signing_key_fpr=$(gpg --list-secret-keys --with-colons | awk -F: "/^fpr:/ {print \$10; exit}")
+              if [ -z "$signing_key_fpr" ]; then
+                echo "Failed to determine signing key fingerprint."
+                exit 1
+              fi
 
               new_repo_pkgs=()
               for pkg in new-artifacts/*.pkg.tar.zst; do
@@ -243,7 +287,7 @@ jobs:
                 exit 1
               fi
 
-              repo-add --remove "repo/x86_64/${REPO_DB_NAME}.db.tar.zst" "${new_repo_pkgs[@]}"
+              repo-add --remove --sign --key "$signing_key_fpr" "repo/x86_64/${REPO_DB_NAME}.db.tar.zst" "${new_repo_pkgs[@]}"
             '
 
       - name: Publish rolling release
