@@ -166,6 +166,8 @@ jobs:
       REPO_DB_NAME: evanpurkhiser
 
     steps:
+      - uses: actions/checkout@v3
+
       - name: Download newly built package artifacts
         uses: actions/download-artifact@v4
         with:
