@@ -252,6 +252,13 @@ jobs:
             done
 
             gh release upload "$RELEASE_TAG" repo/x86_64/* --clobber
+
+            # Move the rolling tag to the current commit so the release
+            # reflects the commit that produced the currently published repo.
+            git tag -f "$RELEASE_TAG" "$GITHUB_SHA"
+            git push -f origin "refs/tags/$RELEASE_TAG"
+            gh release edit "$RELEASE_TAG" \
+              --notes "Automated pacman repository publish from ${GITHUB_SHA}."
           else
             gh release create "$RELEASE_TAG" \
               --title "$RELEASE_TAG" \

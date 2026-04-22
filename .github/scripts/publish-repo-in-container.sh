@@ -36,3 +36,7 @@ if [[ ${#new_repo_pkgs[@]} -eq 0 ]]; then
 fi
 
 repo-add --remove --sign --key "$signing_key_fpr" "repo/x86_64/${REPO_DB_NAME}.db.tar.zst" "${new_repo_pkgs[@]}"
+
+# repo-add renames the previous db/files archives to *.old (and signs them)
+# as local backups. We don't want those in the published release.
+rm -f repo/x86_64/*.old repo/x86_64/*.old.sig
