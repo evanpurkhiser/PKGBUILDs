@@ -57,7 +57,7 @@ jobs:
     env:
       # List of packages which will be auto-published to the AUR. Must be a
       # JSON string because env vars are strings in GitHub Actions.
-      auto_publish: '["things3-cloud", "tmux-ai-titles"]'
+      auto_publish: '["things3-cloud", "tmux-ai-titles", "resyctl"]'
       GPG_PACKAGE_SIGNING_KEY: ${{ secrets.GPG_PACKAGE_SIGNING_KEY }}
 
     steps:
