@@ -11,8 +11,8 @@ Packages are available as build artifacts.
 Import the package signing key first:
 
 ```bash
-sudo pacman-key --keyserver hkps://keyserver.ubuntu.com --recv-keys B5849CBB1122C462550F2B72A04148F92E741E20
-sudo pacman-key --lsign-key B5849CBB1122C462550F2B72A04148F92E741E20
+sudo pacman-key --keyserver hkps://keyserver.ubuntu.com --recv-keys DE0CDD0EBA7CBA65BC23BA28E9A664529E7CACFB
+sudo pacman-key --lsign-key DE0CDD0EBA7CBA65BC23BA28E9A664529E7CACFB
 ```
 
 Then add the rolling GitHub release-backed pacman repo to your
