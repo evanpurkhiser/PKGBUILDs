@@ -25,7 +25,7 @@ jobs:
     outputs:
       packages: ${{ steps.packages.outputs.packages }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: packages
         run: |
           PACKAGE="${{ github.event.inputs.package }}"
@@ -61,7 +61,7 @@ jobs:
       GPG_PACKAGE_SIGNING_KEY: ${{ secrets.GPG_PACKAGE_SIGNING_KEY }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -166,7 +166,7 @@ jobs:
       REPO_DB_NAME: evanpurkhiser
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Download newly built package artifacts
         uses: actions/download-artifact@v4

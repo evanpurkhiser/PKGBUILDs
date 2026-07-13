@@ -5,8 +5,8 @@ set -e
 cd "$(dirname "$0")"
 
 if [ $# -lt 1 ]; then
-    echo "usage: $(basename $0) <path/to/project> [git-push options]" >&2
-    exit -1
+	echo "usage: $(basename "$0") <path/to/project> [git-push options]" >&2
+	exit 1
 fi
 
 pkg=$1
@@ -16,20 +16,20 @@ git_root=$(realpath "$(git rev-parse --git-dir)/..")/
 pkg_path=$(realpath "$pkg")
 pkg_name=$(basename "$pkg_path")
 
-prefix=${pkg_path#$git_root}
+prefix=${pkg_path#"$git_root"}
 branch=aur4/$pkg_name
 
 if [ ! -d "$pkg_path" ] || [ ! -e "${pkg_path}/PKGBUILD" ]; then
-    echo "$pkg_name does not contain a PKGBUILD" >&2
-    exit -1
+	echo "$pkg_name does not contain a PKGBUILD" >&2
+	exit 1
 fi
 
 # Split the package into a branch
-git subtree split --prefix="$prefix" -b $branch
+git subtree split --prefix="$prefix" -b "$branch"
 
 # Generate .SRCINFO for each commit
 export FILTER_BRANCH_SQUELCH_WARNING=1
-git filter-branch -f --tree-filter "makepkg --printsrcinfo > .SRCINFO && echo '' >> .SRCINFO" -- $branch
+git filter-branch -f --tree-filter "makepkg --printsrcinfo > .SRCINFO && echo '' >> .SRCINFO" -- "$branch"
 
-git push $@ ssh+git://aur@aur.archlinux.org/${pkg_name}.git $branch:master
-git branch -D $branch
+git push "$@" "ssh+git://aur@aur.archlinux.org/${pkg_name}.git" "${branch}:master"
+git branch -D "$branch"

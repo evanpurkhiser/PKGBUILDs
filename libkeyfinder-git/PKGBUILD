@@ -26,7 +26,7 @@ build() {
 	cd "$srcdir/$pkgname"
 
 	# Disable building unit tests so we do not need the catch2 dep
-	cmake -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=${pkgdir}/usr -S . -B build
+	cmake -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX="${pkgdir}"/usr -S . -B build
 	cmake --build build
 }
 
