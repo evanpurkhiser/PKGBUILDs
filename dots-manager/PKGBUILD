@@ -8,7 +8,7 @@ pkgver=1.0.0
 pkgrel=1
 
 source=("https://github.com/evanpurkhiser/dots/archive/v${pkgver}.tar.gz")
-md5sums=('a627e5136cf3162a66f6e211252b1d51')
+sha256sums=('91b07815441bf80f6c2913ad3dc210cd450d0defd2e33e81ff2c2dd9c21efa25')
 depends=('git' 'python')
 arch=('any')
 

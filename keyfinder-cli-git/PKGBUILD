@@ -2,7 +2,7 @@
 
 pkgname=keyfinder-cli-git
 pkgdesc="A DJ friendly tool for estimating the musical key of an audio file"
-license=('GPL3')
+license=('GPL-3.0-or-later')
 url="https://github.com/evanpurkhiser/keyfinder-cli"
 pkgver=40.91ec8bb
 pkgrel=1
