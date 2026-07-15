@@ -33,3 +33,5 @@ makepkg -si --noconfirm
 
 cd "$PACKAGE_DIR"
 makepkg -s --noconfirm --sign --key "$signing_key_fpr"
+makepkg --printsrcinfo >.SRCINFO
+alpm-lint check --scope source-info --level suggest .SRCINFO

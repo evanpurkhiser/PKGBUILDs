@@ -30,7 +30,7 @@ chmod 0600 "$KEY_FILE"
 pacman-key --init
 pacman-key --populate
 pacman -Syu --noconfirm
-pacman -S --noconfirm git sudo
+pacman -S --noconfirm alpm-lint git sudo
 
 sed -i '/^OPTIONS=/s/\<debug\>/!debug/' /etc/makepkg.conf
 
