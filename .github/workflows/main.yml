@@ -25,10 +25,12 @@ jobs:
     outputs:
       packages: ${{ steps.packages.outputs.packages }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
       - id: packages
         run: |
-          PACKAGE="${{ github.event.inputs.package }}"
+          PACKAGE="${GITHUB_EVENT_INPUTS_PACKAGE}"
 
           if [ -n "$PACKAGE" ]; then
             if [ ! -f "$PACKAGE/PKGBUILD" ]; then
@@ -41,6 +43,8 @@ jobs:
           fi
 
           echo "packages=$PACKAGES" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_EVENT_INPUTS_PACKAGE: ${{ github.event.inputs.package }}
   build:
     name: build
     needs: prepare
@@ -61,15 +65,16 @@ jobs:
       GPG_PACKAGE_SIGNING_KEY: ${{ secrets.GPG_PACKAGE_SIGNING_KEY }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Bump PKGBUILD version and checksums
         if: github.event_name == 'workflow_dispatch'
         run: |
-          PACKAGE="${{ matrix.package }}"
-          VERSION="${{ github.event.inputs.version }}"
+          PACKAGE="${MATRIX_PACKAGE}"
+          VERSION="${GITHUB_EVENT_INPUTS_VERSION}"
           PKGBUILD_PATH="${PACKAGE}/PKGBUILD"
 
           python3 - "$PKGBUILD_PATH" "$VERSION" <<'PY'
@@ -120,18 +125,23 @@ jobs:
             git pull --rebase origin main
             git push origin HEAD:main
           fi
+        env:
+          MATRIX_PACKAGE: ${{ matrix.package }}
+          GITHUB_EVENT_INPUTS_VERSION: ${{ github.event.inputs.version }}
 
       - name: Build package
         run: |
           docker run --rm \
-            -e GPG_PACKAGE_SIGNING_KEY="${{ env.GPG_PACKAGE_SIGNING_KEY }}" \
-            -e PACKAGE_DIR="/pkgs/${{ matrix.package }}" \
+            -e GPG_PACKAGE_SIGNING_KEY="${GPG_PACKAGE_SIGNING_KEY}" \
+            -e PACKAGE_DIR="/pkgs/${MATRIX_PACKAGE}" \
             -v ${{ github.workspace }}:/pkgs \
             -w /pkgs \
             archlinux:base-devel \
             /bin/bash /pkgs/.github/scripts/build-package-in-container.sh
+        env:
+          MATRIX_PACKAGE: ${{ matrix.package }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ matrix.package }}-pkgs
           path: |
@@ -146,11 +156,13 @@ jobs:
           git fetch --prune
           docker run --rm \
             -e PRIVATE_KEY_AUR="${{ secrets.PRIVATE_KEY_AUR }}" \
-            -e PACKAGE="${{ matrix.package }}" \
+            -e PACKAGE="${MATRIX_PACKAGE}" \
             -v ${{ github.workspace }}:/pkgs \
             -w /pkgs \
             archlinux:base-devel \
             /bin/bash /pkgs/.github/scripts/publish-in-container.sh
+        env:
+          MATRIX_PACKAGE: ${{ matrix.package }}
 
   publish-repo:
     name: publish pacman repo release
@@ -166,10 +178,12 @@ jobs:
       REPO_DB_NAME: evanpurkhiser
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
 
       - name: Download newly built package artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           path: new-artifacts
           merge-multiple: true
