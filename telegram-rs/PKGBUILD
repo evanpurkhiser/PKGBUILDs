@@ -1,0 +1,38 @@
+# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+
+pkgname=telegram-rs
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Telegram CLI client built on TDLib"
+arch=('x86_64')
+url="https://github.com/evanpurkhiser/telegram-rs"
+license=('MIT')
+depends=('brotli' 'gcc-libs' 'glibc' 'libc++' 'libc++abi' 'openssl' 'zlib' 'zstd')
+makedepends=('cargo' 'patchelf')
+options=('!lto')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('f242cd8f03a450b28f05c292c3d0bfe20318650a7da6dd1525e6e5f5738aa01b')
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	cargo build --release --locked
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+
+	local tdlib
+	tdlib=$(find target/release/build -path '*/out/tdlib/lib/libtdjson.so.*' -print -quit)
+
+	install -Dm755 target/release/tg "${pkgdir}/usr/bin/tg"
+	install -Dm755 "$tdlib" "${pkgdir}/usr/lib/${pkgname}/${tdlib##*/}"
+	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+	# shellcheck disable=SC2016 # $ORIGIN must be preserved for the dynamic linker.
+	patchelf --set-rpath '$ORIGIN/../lib/telegram-rs' "${pkgdir}/usr/bin/tg"
+
+	# The prebuilt TDLib declares LLVM's libunwind.so.1, which Arch does not
+	# package. It has no unresolved libunwind symbols; unwinding is provided by
+	# libgcc_s, so remove the unused dependency.
+	patchelf --remove-needed libunwind.so.1 "${pkgdir}/usr/lib/${pkgname}/${tdlib##*/}"
+}
