@@ -123,9 +123,11 @@ jobs:
             git commit -m "${PACKAGE}: bump to v${VERSION}"
 
             git pull --rebase origin main
+            gh auth setup-git
             git push origin HEAD:main
           fi
         env:
+          GH_TOKEN: ${{ github.token }}
           MATRIX_PACKAGE: ${{ matrix.package }}
           GITHUB_EVENT_INPUTS_VERSION: ${{ github.event.inputs.version }}
 
