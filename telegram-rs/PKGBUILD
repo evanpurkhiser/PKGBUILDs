@@ -1,7 +1,7 @@
 # Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
 
 pkgname=telegram-rs
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="Telegram CLI client built on TDLib"
 arch=('x86_64')
@@ -11,7 +11,7 @@ depends=('brotli' 'gcc-libs' 'glibc' 'libc++' 'libc++abi' 'openssl' 'zlib' 'zstd
 makedepends=('cargo' 'patchelf')
 options=('!lto')
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
-sha256sums=('f242cd8f03a450b28f05c292c3d0bfe20318650a7da6dd1525e6e5f5738aa01b')
+sha256sums=('033b7c01ec4860b12650d42a2799c03f59ee932d9689177040e5ed209f3be23c')
 
 build() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
