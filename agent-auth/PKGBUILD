@@ -1,0 +1,35 @@
+# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+
+pkgname=agent-auth
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Context-aware routing and authorization for SSH agent requests"
+arch=('any')
+url="https://github.com/evanpurkhiser/agent-auth"
+license=('MIT')
+depends=('openssh' 'python' 'tailscale')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=()
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('b663f55f70ae492d28528beb9a2961a23856ec867faf6194d49e410d1e7392f9')
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+check() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	PYTHONPATH=src python -m unittest discover -s tests -v
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+
+	install -Dm644 systemd/ssh-agent-proxy.socket \
+		"${pkgdir}/usr/lib/systemd/system/ssh-agent-proxy.socket"
+	install -Dm644 systemd/ssh-agent-proxy@.service \
+		"${pkgdir}/usr/lib/systemd/system/ssh-agent-proxy@.service"
+	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
