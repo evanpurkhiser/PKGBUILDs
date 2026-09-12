@@ -1,4 +1,4 @@
-# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+# Maintainer: Evan Purkhiser <dots-manager.aur@evanpurkhiser.com>
 
 pkgname=dots-manager
 pkgdesc="A portable tool for managing a single set of dotfiles in an organized fashion"

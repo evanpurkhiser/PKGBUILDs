@@ -1,4 +1,4 @@
-# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+# Maintainer: Evan Purkhiser <telegram-rs.aur@evanpurkhiser.com>
 
 pkgname=telegram-rs
 pkgver=0.1.1

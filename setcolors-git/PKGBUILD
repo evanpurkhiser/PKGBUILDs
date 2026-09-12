@@ -1,4 +1,4 @@
-# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+# Maintainer: Evan Purkhiser <setcolors-git.aur@evanpurkhiser.com>
 
 pkgname=setcolors-git
 pkgdesc="Allows you to set the linux VT101 default color palette"

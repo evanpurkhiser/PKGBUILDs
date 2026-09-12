@@ -1,4 +1,4 @@
-# Maintainer: Evan Purkhiser <evanpurkhiser@gmail.com>
+# Maintainer: Evan Purkhiser <keyfinder-cli-git.aur@evanpurkhiser.com>
 
 pkgname=keyfinder-cli-git
 pkgdesc="A DJ friendly tool for estimating the musical key of an audio file"
