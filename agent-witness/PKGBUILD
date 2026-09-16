@@ -1,8 +1,8 @@
 # Maintainer: Evan Purkhiser <agent-witness.aur@evanpurkhiser.com>
 
 pkgname=agent-witness
-pkgver=0.1.2
-pkgrel=2
+pkgver=0.1.3
+pkgrel=1
 pkgdesc="Remote SSH agent with phone-based authorization"
 arch=('x86_64')
 url="https://github.com/evanpurkhiser/agent-witness"
@@ -11,7 +11,7 @@ depends=('ca-certificates' 'gcc-libs' 'glibc' 'openssl')
 makedepends=('cargo' 'nodejs' 'pnpm' 'pkgconf')
 options=('!lto')
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
-sha256sums=('cdbbf05219ff65fae8bc53b81b74e2a41f351b37d1b9b036deef466c35ec0bb8')
+sha256sums=('c71592fd393d7568bb07149fceb57ab6be5e68be66d282334318ac5ffbacf526')
 
 prepare() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
