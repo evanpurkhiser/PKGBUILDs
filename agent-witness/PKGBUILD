@@ -2,7 +2,7 @@
 
 pkgname=agent-witness
 pkgver=0.1.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Remote SSH agent with phone-based authorization"
 arch=('x86_64')
 url="https://github.com/evanpurkhiser/agent-witness"
@@ -27,5 +27,7 @@ build() {
 package() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
 	install -Dm755 target/release/agent-witness "${pkgdir}/usr/bin/agent-witness"
+	install -Dm644 systemd/agent-witness.service \
+		"${pkgdir}/usr/lib/systemd/system/agent-witness.service"
 	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
