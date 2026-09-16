@@ -1,0 +1,31 @@
+# Maintainer: Evan Purkhiser <agent-witness.aur@evanpurkhiser.com>
+
+pkgname=agent-witness
+pkgver=0.1.1
+pkgrel=1
+pkgdesc="Remote SSH agent with phone-based authorization"
+arch=('x86_64')
+url="https://github.com/evanpurkhiser/agent-witness"
+license=('MIT')
+depends=('ca-certificates' 'gcc-libs' 'glibc' 'openssl')
+makedepends=('cargo' 'nodejs' 'pnpm' 'pkgconf')
+options=('!lto')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('840f081c7a25f8cd371da046290f8e25cf4253b5212d5eafe2a9480a290b1236')
+
+prepare() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	pnpm install --frozen-lockfile
+	cargo fetch --locked
+}
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	pnpm build:production
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	install -Dm755 target/release/agent-witness "${pkgdir}/usr/bin/agent-witness"
+	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
