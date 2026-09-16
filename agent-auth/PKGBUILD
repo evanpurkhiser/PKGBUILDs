@@ -1,7 +1,7 @@
 # Maintainer: Evan Purkhiser <agent-auth.aur@evanpurkhiser.com>
 
 pkgname=agent-auth
-pkgver=0.1.2
+pkgver=0.1.3
 pkgrel=1
 pkgdesc="Context-aware routing and authorization for SSH agent requests"
 arch=('any')
@@ -11,7 +11,7 @@ depends=('openssh' 'python' 'tailscale')
 makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
 checkdepends=()
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
-sha256sums=('ea86057d4bbe80f39a63bf79f397f58fd946ee043960cc16217330a55f818709')
+sha256sums=('2822e44378686767823a741b2f49dd7772e72731d4939c98bfd95427c0e1cc3d')
 
 build() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
