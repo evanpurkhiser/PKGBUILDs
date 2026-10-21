@@ -1,7 +1,7 @@
 # Maintainer: Evan Purkhiser <iptorrents-cli.aur@evanpurkhiser.com>
 
 pkgname=iptorrents-cli
-pkgver=0.2.0
+pkgver=0.2.1
 pkgrel=1
 pkgdesc="CLI for searching and downloading torrents from IPTorrents"
 arch=('x86_64' 'aarch64')
@@ -11,7 +11,7 @@ depends=('glibc' 'gcc-libs')
 makedepends=('cargo')
 options=('!lto')
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/evanpurkhiser/iptorrents-cli/archive/refs/tags/v${pkgver}.tar.gz")
-sha256sums=('00181ec55348e2990fae0b638345cdde321f7a12c828f72556f9d388d306af52')
+sha256sums=('f6d28df6a0a92db4ada86f4a71afc92453cb7f56bad566d4cf20237b3573d6fe')
 
 build() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
