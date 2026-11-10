@@ -69,6 +69,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+          ref: main
 
       - name: Set up lint tools
         if: github.event_name == 'workflow_dispatch'
@@ -119,23 +120,17 @@ jobs:
 
           prek run --files "$PKGBUILD_PATH" || prek run --files "$PKGBUILD_PATH"
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add "$PKGBUILD_PATH"
-          if git diff --cached --quiet; then
-            echo "No PKGBUILD/checksum changes detected for ${PACKAGE}"
-          else
-            git commit -m "${PACKAGE}: bump to v${VERSION}"
-
-            git pull --rebase origin main
-            gh auth setup-git
-            git push origin HEAD:main
-          fi
         env:
-          GH_TOKEN: ${{ github.token }}
           MATRIX_PACKAGE: ${{ matrix.package }}
           GITHUB_EVENT_INPUTS_VERSION: ${{ github.event.inputs.version }}
+
+      - name: Commit PKGBUILD update
+        if: github.event_name == 'workflow_dispatch'
+        uses: evanpurkhiser/workflows/actions/commit-and-push@main
+        with:
+          stage-script: git add "${{ matrix.package }}/PKGBUILD"
+          branch: main
+          commit-message: "${{ matrix.package }}: bump to v${{ github.event.inputs.version }}"
 
       - name: Build package
         run: |
