@@ -1,7 +1,7 @@
 # Maintainer: Evan Purkhiser <psst.aur@evanpurkhiser.com>
 
 pkgname=psst
-pkgver=0.1.0
+pkgver=0.1.2
 pkgrel=1
 pkgdesc="Short-lived local sessions for 1Password item-sharing links"
 arch=('x86_64' 'aarch64')
@@ -11,7 +11,7 @@ depends=('gcc-libs' 'glibc' 'systemd')
 makedepends=('cargo')
 options=('!lto')
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('22250e9990cef189d14c523e0e2f7925940108a9b97517008b99e10fe2092b0a')
 
 build() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
