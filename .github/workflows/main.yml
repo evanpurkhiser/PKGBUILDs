@@ -70,6 +70,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Set up lint tools
+        if: github.event_name == 'workflow_dispatch'
+        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4.2.0
+
       - name: Bump PKGBUILD version and checksums
         if: github.event_name == 'workflow_dispatch'
         run: |
@@ -112,6 +116,8 @@ jobs:
               chown -R builder:builder /pkg && \
               su builder -c "cd /pkg && updpkgsums" && \
               chown -R "$RUNNER_UID:$RUNNER_GID" /pkg'
+
+          prek run --files "$PKGBUILD_PATH" || prek run --files "$PKGBUILD_PATH"
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
