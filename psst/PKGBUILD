@@ -1,8 +1,8 @@
 # Maintainer: Evan Purkhiser <psst.aur@evanpurkhiser.com>
 
 pkgname=psst
-pkgver=0.2.1
-pkgrel=2
+pkgver=0.2.2
+pkgrel=1
 pkgdesc="Short-lived local sessions for 1Password item-sharing links"
 arch=('x86_64' 'aarch64')
 url="https://github.com/evanpurkhiser/psst"
@@ -11,11 +11,11 @@ depends=('gcc-libs' 'glibc' 'systemd')
 makedepends=('cargo' 'musl' 'rust-musl')
 options=('!lto')
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
-sha256sums=('73fc6b9a1f44ed500afe8d80c98364b73fb14a5681d01f1dd2d169d150bd8905')
+sha256sums=('18ce9ce55ab9a85f8fa6f3f8f1f7660092de0aceb89c16de3489ac8e281732c4'
+	'5b7afddbbcd999ab8cbbc7674e1815421695c190261510b1d148fea278fd08e8')
 
 if (($(vercmp "$pkgver" 0.2.2) >= 0)); then
 	source+=("${pkgname}-chrome-extension-${pkgver}.crx::${url}/releases/download/v${pkgver}/psst-chrome-extension.crx")
-	sha256sums+=('SKIP')
 fi
 
 build() {
