@@ -8,7 +8,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/evanpurkhiser/psst"
 license=('MIT')
 depends=('gcc-libs' 'glibc' 'systemd')
-makedepends=('cargo')
+makedepends=('cargo' 'musl' 'rust-musl')
 options=('!lto')
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
 sha256sums=('22250e9990cef189d14c523e0e2f7925940108a9b97517008b99e10fe2092b0a')
@@ -16,16 +16,18 @@ sha256sums=('22250e9990cef189d14c523e0e2f7925940108a9b97517008b99e10fe2092b0a')
 build() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
 	cargo build --release --locked
+	PSST_BROWSER_BRIDGE_TARGET="${CARCH}-unknown-linux-musl" ./scripts/build-browser-bridge
 }
 
 check() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
-	cargo test --release --locked --all-targets
+	cargo test --release --locked --workspace --all-targets
 }
 
 package() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
 
 	install -Dm755 target/release/psst "${pkgdir}/usr/bin/psst"
+	install -Dm755 "target/${CARCH}-unknown-linux-musl/release/psst-browser-bridge" "${pkgdir}/usr/bin/psst-browser-bridge"
 	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
