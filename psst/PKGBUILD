@@ -2,7 +2,7 @@
 
 pkgname=psst
 pkgver=0.2.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Short-lived local sessions for 1Password item-sharing links"
 arch=('x86_64' 'aarch64')
 url="https://github.com/evanpurkhiser/psst"
@@ -15,7 +15,7 @@ sha256sums=('73fc6b9a1f44ed500afe8d80c98364b73fb14a5681d01f1dd2d169d150bd8905')
 
 build() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
-	cargo build --release --locked
+	PSST_BROWSER_BRIDGE_PATH=/usr/lib/psst/browser-bridge cargo build --release --locked
 	PSST_BROWSER_BRIDGE_TARGET="${CARCH}-unknown-linux-musl" ./scripts/build-browser-bridge
 }
 
@@ -28,6 +28,6 @@ package() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
 
 	install -Dm755 target/release/psst "${pkgdir}/usr/bin/psst"
-	install -Dm755 "target/${CARCH}-unknown-linux-musl/release/psst-browser-bridge" "${pkgdir}/usr/bin/psst-browser-bridge"
+	install -Dm755 "target/${CARCH}-unknown-linux-musl/release/psst-browser-bridge" "${pkgdir}/usr/lib/psst/browser-bridge"
 	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
