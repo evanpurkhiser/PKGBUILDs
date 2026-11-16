@@ -10,13 +10,10 @@ license=('MIT')
 depends=('gcc-libs' 'glibc' 'systemd')
 makedepends=('cargo' 'musl' 'rust-musl')
 options=('!lto')
-source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz"
+	"${pkgname}-chrome-extension-${pkgver}.crx::${url}/releases/download/v${pkgver}/psst-chrome-extension.crx")
 sha256sums=('18ce9ce55ab9a85f8fa6f3f8f1f7660092de0aceb89c16de3489ac8e281732c4'
 	'5b7afddbbcd999ab8cbbc7674e1815421695c190261510b1d148fea278fd08e8')
-
-if (($(vercmp "$pkgver" 0.2.2) >= 0)); then
-	source+=("${pkgname}-chrome-extension-${pkgver}.crx::${url}/releases/download/v${pkgver}/psst-chrome-extension.crx")
-fi
 
 build() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
@@ -36,8 +33,6 @@ package() {
 
 	install -Dm755 target/release/psst "${pkgdir}/usr/bin/psst"
 	install -Dm755 "target/${CARCH}-unknown-linux-musl/release/psst-browser-bridge" "${pkgdir}/usr/lib/psst/browser-bridge"
-	if [[ -f "${srcdir}/${pkgname}-chrome-extension-${pkgver}.crx" ]]; then
-		install -Dm644 "${srcdir}/${pkgname}-chrome-extension-${pkgver}.crx" "${pkgdir}/usr/lib/psst/chrome-extension.crx"
-	fi
+	install -Dm644 "${srcdir}/${pkgname}-chrome-extension-${pkgver}.crx" "${pkgdir}/usr/lib/psst/chrome-extension.crx"
 	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
