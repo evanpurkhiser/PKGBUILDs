@@ -27,6 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.3
         with:
+          fetch-depth: 0
           persist-credentials: false
       - id: packages
         run: |
@@ -39,15 +40,22 @@ jobs:
             fi
             PACKAGES=$(printf '["%s"]' "$PACKAGE")
           else
-            PACKAGES=$(python3 -c 'import json; from pathlib import Path; pkgs = sorted(p.parent.name for p in Path(".").glob("*/PKGBUILD")); print(json.dumps(pkgs))')
+            PACKAGES=$(
+              python3 .github/scripts/resolve-package-matrix.py \
+                --before "$GITHUB_EVENT_BEFORE" \
+                --after "$GITHUB_SHA"
+            )
           fi
 
+          echo "Selected packages: $PACKAGES"
           echo "packages=$PACKAGES" >> "$GITHUB_OUTPUT"
         env:
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
           GITHUB_EVENT_INPUTS_PACKAGE: ${{ github.event.inputs.package }}
   build:
     name: build
     needs: prepare
+    if: needs.prepare.outputs.packages != '[]'
     runs-on: ubuntu-latest
 
     strategy:
