@@ -8,7 +8,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/evanpurkhiser/psst"
 license=('MIT')
 depends=('gcc-libs' 'glibc' 'systemd')
-makedepends=('cargo' 'musl' 'rust-musl')
+makedepends=('cargo')
 options=('!lto')
 source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz"
 	"${pkgname}-chrome-extension-${pkgver}.crx::${url}/releases/download/v${pkgver}/psst-chrome-extension.crx")
@@ -17,10 +17,8 @@ sha256sums=('86e596fad25d2b520fcec9f64e0e361bd0a1f181b1dfa71e5ace2d29933b8525'
 
 build() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
-	PSST_BROWSER_BRIDGE_PATH=/usr/lib/psst/browser-bridge \
-		PSST_BROWSER_EXTENSION_PATH=/usr/lib/psst/chrome-extension.crx \
+	PSST_BROWSER_EXTENSION_PATH=/usr/lib/psst/chrome-extension.crx \
 		cargo build --release --locked
-	PSST_BROWSER_BRIDGE_TARGET="${CARCH}-unknown-linux-musl" ./scripts/build-browser-bridge
 }
 
 check() {
@@ -32,7 +30,10 @@ package() {
 	cd "${srcdir}/${pkgname}-${pkgver}"
 
 	install -Dm755 target/release/psst "${pkgdir}/usr/bin/psst"
-	install -Dm755 "target/${CARCH}-unknown-linux-musl/release/psst-browser-bridge" "${pkgdir}/usr/lib/psst/browser-bridge"
 	install -Dm644 "${srcdir}/${pkgname}-chrome-extension-${pkgver}.crx" "${pkgdir}/usr/lib/psst/chrome-extension.crx"
+	install -Dm644 packaging/psst.service "${pkgdir}/usr/lib/systemd/system/psst.service"
+	install -Dm644 packaging/psst.sysusers "${pkgdir}/usr/lib/sysusers.d/psst.conf"
+	install -Dm644 packaging/com.evanpurkhiser.Psst1.conf \
+		"${pkgdir}/usr/share/dbus-1/system.d/com.evanpurkhiser.Psst1.conf"
 	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
